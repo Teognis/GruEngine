@@ -1,4 +1,4 @@
 Power
 =======
 
-Interactive fiction ( detective / thriller ) game written in Python 
+Text-based / Dark Souls-like RPG written in Python

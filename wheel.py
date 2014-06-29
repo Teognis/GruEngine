@@ -1,9 +1,13 @@
 class Wheel():
  
-    def __init__(self, size):                               #creates and instance of a Wheel (that takes into account the screen coordinates)
+    def __init__(self, screen, size):
+        #creates an instance of a Wheel (that takes into account the screen coordinates)
+        self.links = []
+        self.screen = screen
         self.inrects = []
         self.outrects = []
-        self.padding = 60
+        self.padding = 60 
+        self.anchor = None     
         self.x = size[0]
         self.y = size[1]
         self.find_positions()
@@ -15,6 +19,8 @@ class Wheel():
         self.button_color = (200, 168, 200)
         self.exit_size = 14
         self.button_size = 17
+        self.scene = None
+        
         
 ##        self.linkpos = [(self.x/2,self.ypos + 50),(self.x/2 + 30,self.ypos + 30),(self.x/2 + 60,self.ypos),(self.x/2 + 30,self.ypos - 30),(self.x/2,self.ypos - 50),(self.x/2 - 30,self.ypos - 30),(self.x/2 - 60,self.ypos),(self.x/2 - 30,self.ypos + 30)]
         
@@ -50,12 +56,13 @@ class Wheel():
         self.linkpos = link_coords
 
             
-    def draw_triangles(self, screen):
+    def draw_triangles(self):
         import pygame
         import itertools
         import os
         from os import chdir
         from os.path import dirname
+        screen = self.screen
         DIRNAME = os.path.join(dirname(__file__), "resources",)
         BKGSCREEN = pygame.image.load(os.path.join(DIRNAME, "img", "bkgscreen.tga"))
         BKGSCREEN = pygame.transform.scale(BKGSCREEN, (self.x,self.y))
@@ -106,12 +113,13 @@ class Wheel():
         
        
         
-    def draw_exits(self, screen):
+    def draw_exits(self):
         import pygame
         import itertools
         import os
         from os import chdir
         from os.path import dirname
+        screen = self.screen
         txtcolor = self.exit_color
         DIRNAME = os.path.join(dirname(__file__), "resources",)
         font = pygame.font.Font(os.path.join(DIRNAME, "font", "advert.ttf"), self.exit_size)
@@ -136,83 +144,100 @@ class Wheel():
             return rect
                 
         
-        for key in self.links:
+        for key in self.links:           
+
             coord = self.linkpos[key]
-            name = self.links[key].name
+            name = self.links[key].txt            
             text = font.render(name, 1, txtcolor)        
             rect = text.get_rect()
             rect = linkrect_position(key,rect,coord)
             self.outrects.append(rect)
+            
             screen.blit(text, rect)
 
-    def draw_buttons(self, screen):
+    def draw_button(self):
         import pygame
         import itertools
         import os
         from os import chdir
         from os.path import dirname
+        screen = self.screen
         DIRNAME = os.path.join(dirname(__file__), "resources",)        
-        txtcolor = self.button_color        
-##      txtcolor = (201, 192, 187)        
+        txtcolor = self.button_color 
+        coord = (self.wheel_x, self.wheel_y)    
         font = pygame.font.Font(os.path.join(DIRNAME, "font", "advert.ttf"), self.button_size)      
-        for word, coord in zip(self.inner,self.coords):            
+        
+        
+        if self.scene.anchor.type is not None:            
+            word = self.scene.anchor.type
             text = font.render(word, 1, txtcolor)        
             rect = text.get_rect()
             rect.center = coord
-            self.inrects.append(rect)
-            screen.blit(text, rect)              
-        
-    def draw(self, screen):
-        self.draw_triangles(screen)
-##        self.draw_buttons(screen)
-##        self.draw_exits(screen)       
-        
+            self.inrects.append(rect)            
+            screen.blit(text, rect)    
 
-    def state_back(self):                                   #this "undo" function deletes the last wheel command from the stack
-        if len(self.state) is not 0:
-            self.state.pop()
+                                      
         
-
-    def input(self, direction):                             #enters the (already parsed) keyboard/mouse commands into the self.state stack
-        if direction == 0:
-            self.state_back()
-        if len(self.state) < 3:
-            self.state.append(direction)
+    def draw(self):
+        self.draw_triangles()
+        self.draw_button()
+        self.draw_exits()       
+        
 
     def get_collisions(self, mrect):                         #detects if the user is hovering over a wheel rectangle
         index_in = mrect.collidelist(self.inrects)
-        index_out = mrect.collidelist(self.outrects)
+        index_out = mrect.collidelist(self.outrects)        
+        
+        w_button = None
+             
+        if index_out is not -1:
+            items = self.links.keys()   
+            # print items, index_out         
+            w_button = items[index_out]           
+                     
         if index_in is not -1:
-            return index_in
-        elif index_out is not -1:
-            return index_out           
-        
-        
-    def set_exits(self, room):
-        exits = []
-        for exit in room.exits:
-            exits.append(exit)
-        self.exits = exits 
-           
-    def find_coords(self, room):
-        coord = room.coord
-        exits = self.exits
-        links = {}
-        
-        def neighbour_list(coord):
-            coords = []
-            x = coord[0]
-            y = coord[1]
-            seq = [(x,y+1),(x+1,y+1),(x+1,y),(x+1,y-1),(x,y-1),(x-1,y-1),(x-1,y),(x-1,y+1)]
-            coords.extend(seq)
-            return coords
-        neighbours = neighbour_list(coord)
+            w_button = self.button.type
 
-        for i in exits:
-            if i.coord in neighbours:
-                index = neighbours.index(i.coord)
-                links[index] = i
-        self.links = links
+        return w_button
+                      
+           
+
+    def update(self, scene):           
+        # self.clear() 
+        self.scene = scene 
+        self.inrects = []
+        self.outrects = []   
+        self.links = scene.links     
+        self.button = scene.anchor     
+         
+             
+                    
+    def clear(self):
+        # self.links = {}        
+        
+        import pygame
+        screen = self.screen
+        for i in self.outrects:
+            x, y, width, height = i
+            surface = pygame.Surface((width, height))
+            surface.fill((0,0,0))
+            screen.blit(surface, (x,y))
+
+        for i in self.outrects:
+            x, y, width, height = i
+            surface = pygame.Surface((width, height))
+            surface.fill((0,0,0))
+            screen.blit(surface, (x,y))
+
+        self.inrects = []
+        self.outrects = []
+
+   
+            
+        
+        
+
+            
             
             
         

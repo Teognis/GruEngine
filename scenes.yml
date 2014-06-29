@@ -1,22 +1,111 @@
 ---
+void+:
+    type: location
+    title: Void
+    output:
+        -
+            - txt: There is nothing here. Return from whence you came!
+
+    anchor:
+        type: Clown
+
+
+
+
+
+
 field:    
     type: location
     title: Field
     output:
         -
-            -   txt:
-                    There is a <mailbox/lnk_mailbox> here! Can I write like this, maybe? I don't know.         
-                req:
-                    - requirement=3
-                    - landslide=4
-                eff:
-                    - field=2
-                
-            -   txt:
-                    A <house/lnk_house> is standing here.
-                eff:
-                    - house=3
-                
+            -   txt:    There is a <mailbox/lnk_mailbox> here! Can I write like this maybe? I don't know.         
+
+                req:    requirement=3 landslide=4
+                eff:    field=2
+
+            -   txt:    A <house/lnk_house> is standing here.
+                eff:    house=3
+
         -
-            -   txt: A goblin is shaking about.
-            
+            -   txt: A goblin is shaking about.  
+
+    anchor:
+        type: Continue
+        link: 
+        - graveyard
+
+    wheel:
+        0:
+            txt:    
+            - To graveyard
+            - A hidden path / graveseen=1 thisguys=3                    
+            left:   
+            - graveyard
+            - graveyardambush / zombie=3 vampire=4                    
+            right:
+            - graveyardex
+            - graveyardsurprise / dude=7
+
+        1:
+            txt:
+            - GRANDMA
+        2:
+            txt:
+            - HELLO
+        3:
+            txt:
+            - To chapel / thisis=3            
+            left:
+            - chapelhall            
+            right:
+            - madness
+
+
+graveyard:
+    type: location
+    title: Graveyard
+    output:
+        -
+            - txt: There are some <graves/lnk_graves> here! BEWARE!
+
+              eff: goblin=4
+
+    anchor:
+        type: Back         
+
+    wheel:
+        5:
+            txt:
+            - To field
+            left:
+            - field
+            right:
+            - graveyardlook
+        6:
+            txt:
+            - To heaven
+            left:
+            - heaven
+
+heaven:
+    type: location
+    title: Heaven
+    output:
+        -
+            - txt: Please baby! <help/lnk_angel> me out!
+
+    wheel:
+        1:
+            txt:
+            - Field
+            left:
+            - field
+
+        7:
+            txt:
+            - Graveyard
+            left:
+            - graveyard
+    anchor:
+        type: Continue

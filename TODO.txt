@@ -2,3 +2,9 @@ Week 1
 - interpret_effects
 - flag system
 - basic wheel functions
+(ALL DONE, except interpret_effects! 29.6. 2014)
+
+Week 2
+- finalize flag system and effects
+- work on text variations
+- begin work on inv and clu classes
