@@ -1,0 +1,9 @@
+---
+clu_smash:
+        name: 
+        - Finding an escape route.
+        left:
+        - route_think
+        right:
+        - route_exam
+

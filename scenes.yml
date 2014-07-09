@@ -1,17 +1,12 @@
 ---
-void+:
+usehammer:
     type: location
-    title: Void
     output:
         -
             - txt: There is nothing here. Return from whence you came!
 
-    anchor:
-        type: Clown
-
-
-
-
+    anchor:  
+        type: Back
 
 
 field:    
@@ -19,16 +14,16 @@ field:
     title: Field
     output:
         -
-            -   txt:    There is a <mailbox/lnk_mailbox> here! Can I write like this maybe? I don't know.         
-
-                req:    requirement=3 landslide=4
+            -   txt:    There is a <mailbox/lnk_mailbox> here! Can I write like this maybe? I don't know.       
                 eff:    field=2
 
             -   txt:    A <house/lnk_house> is standing here.
+                req:    goblin=14
                 eff:    house=3
-
         -
-            -   txt: A goblin is shaking about.  
+            -   txt:    A goblin is shaking about.  
+
+    effects:    fire=2 clu_smash=1 itm_hammer=1 itm_nail=1
 
     anchor:
         type: Continue
@@ -42,7 +37,7 @@ field:
             - A hidden path / graveseen=1 thisguys=3                    
             left:   
             - graveyard
-            - graveyardambush / zombie=3 vampire=4                    
+            - graveyardambush / zombie=3 vampire=4                      
             right:
             - graveyardex
             - graveyardsurprise / dude=7
@@ -68,11 +63,15 @@ graveyard:
     output:
         -
             - txt: There are some <graves/lnk_graves> here! BEWARE!
-
               eff: goblin=4
 
+    effects: clu_smash=0 itm_hammer=0
+
     anchor:
-        type: Back         
+        type: Back 
+
+    cutscenes:
+        - zombie / zombies=3
 
     wheel:
         5:
@@ -93,7 +92,7 @@ heaven:
     title: Heaven
     output:
         -
-            - txt: Please baby! <help/lnk_angel> me out!
+            - txt: Please baby! <help/lnk_graves> me out!
 
     wheel:
         1:
@@ -109,3 +108,24 @@ heaven:
             - graveyard
     anchor:
         type: Continue
+
+examine_nail:
+    output:
+    -
+        - txt: You examine the nail very closely!
+    anchor:
+        type: Back
+
+zombie:
+    output:
+    - 
+        - txt: A zombie is near!
+    anchor:
+        type: Back
+
+grave:
+    output:
+    -
+        - txt: There is a grave here!
+    anchor:
+        type: Back

@@ -1,90 +1,13 @@
 ---
-Longsword:    
-    Slot: Right
-    Name: Longsword
-    Ability:
-        -           
-            Name: Swing
-            Tags: 
-            - Attack
-            - Slashing 
-            Output: You swing your sword!           
-        -
-            Name: Thrust            
-            Tags:
-            - Attack
-            - Piercing
-            Output: You thrust your sword into the monster!
-        -
-            Name: Smash             
-            Tags:
-            - Attack
-            - Smashing
-            Output: You smash the area in front of you!
-        #BLOCK:
-            #Tags:
-            #- Block
-            #Output: You try to block the hit with your sword!
-        #Parry:
-            #Tags:
-            #- Block
-            #- Parry
-            #Output: You try to parry the attack with your sword!
+lnk_mailbox:
+    left:
+        - mailbox        
+        - mailbox_fire / mailfire=1 goblin=1 
+    right:
+        - examine_mailbox
 
-Shield:
-    Slot: Left
-    Name: Shield
-    Ability: 
-        -
-            Name: Block
-            Tags:
-            - Defend
-            - Block
-            Output: You block the attack with your shield!
-
-Helm:
-    Slot: Head
-    Name: Helm
-    Ability:
-        -
-            Name: Cast light
-            Tags:
-            - Use
-            - Cast
-            Output: The helm starts to pulsate and emit a feint quantum of light.
-
-Plate armor:
-    Slot: Chest
-    Name: Plate armor
-    Ability:
-        -
-            Name: Deflect
-            Tags:
-            - Defend
-            Output: You attempt to deflect the incoming blow.
-
-Iron boots:
-    Name: Iron boots
-    Slot: Feet
-    Ability:
-        -
-            Name: Dodge
-            Tags:
-            - Evade
-            Output: You jump away!
-
-Gloves:
-    Name: Gloves
-    Slot: Hands
-    Ability:
-        -
-            Name: Grip
-            Tags:
-            - Attack
-            Output: You try to strangle the monster!
-
-
-
-
-
-
+lnk_graves:
+    left:
+        - grave
+    right:
+        - x_grave

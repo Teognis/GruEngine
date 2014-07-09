@@ -4,6 +4,7 @@ class Wheel():
         #creates an instance of a Wheel (that takes into account the screen coordinates)
         self.links = []
         self.screen = screen
+        self.size = size
         self.inrects = []
         self.outrects = []
         self.padding = 60 
@@ -13,7 +14,6 @@ class Wheel():
         self.find_positions()
         self.focus = "Inner"
         self.state = []
-        self.inner = ["Use","Attack","Evade","Defend"]
         self.ypos = 650
         self.exit_color = (201, 145, 100)
         self.button_color = (200, 168, 200)
@@ -64,8 +64,7 @@ class Wheel():
         from os.path import dirname
         screen = self.screen
         DIRNAME = os.path.join(dirname(__file__), "resources",)
-        BKGSCREEN = pygame.image.load(os.path.join(DIRNAME, "img", "bkgscreen.tga"))
-        BKGSCREEN = pygame.transform.scale(BKGSCREEN, (self.x,self.y))
+        BKGSCREEN = pygame.Surface(self.size)
         BKGSCREEN = BKGSCREEN.convert()
         BKGSCREEN.fill((0,0,0))
         TRIANGLE = pygame.image.load(os.path.join(DIRNAME, "img", "ptriangle.png"))
@@ -217,7 +216,7 @@ class Wheel():
         
         import pygame
         screen = self.screen
-        for i in self.outrects:
+        for i in self.inrects:
             x, y, width, height = i
             surface = pygame.Surface((width, height))
             surface.fill((0,0,0))
@@ -231,6 +230,85 @@ class Wheel():
 
         self.inrects = []
         self.outrects = []
+
+
+class Wlink():
+
+    def __init__(self, data, flags):                       #creates an instance of a wheel link (which holds its name and both link paths)
+        self.flags = flags
+        self.txt = None
+        self.left = None
+        self.right = None            
+        self.set_attributes(data) 
+        self.output("txt")
+        self.output("left")
+        self.output("right")       
+        
+    
+    def output(self, attribute):
+        if getattr(self, attribute) is not None:
+            self.format(attribute)
+            self.set(attribute)
+
+    def set(self, attribute):
+        import copy
+        data = self.__dict__[attribute]        
+        output = None
+        for line in data:
+            if self.check(line):
+                output = line[0]
+        self.__dict__[attribute] = output
+    
+    def check(self, line):
+        flags = self.flags
+        reqs = line[1]
+        if reqs == []:
+            return True
+        else:
+            for req in reqs:            
+                if self.flags.check(*req) == False:
+                    return False
+                else:
+                    return True
+    
+    def format(self, attribute):
+        from tools import req_format      
+        data = self.__dict__[attribute]
+        output = []
+        for line in data:
+            formatted_line = req_format(line)
+            output.append(formatted_line)
+        self.__dict__[attribute] = output
+
+    def set_attributes(self, data):                 #generates attributes out of yml streeam
+        for key, value in data.items():
+            key = key.lower()
+            setattr(self,key,value)
+
+class Anchor():
+    def __init__(self, data, flags):   
+        self.flags = flags
+        self.forward = None
+        self.type = None
+        self.link = None     
+        self.set_attributes(data)
+        self.collect_link()
+
+                           
+    def set_attributes(self, dict):
+        for key, value in dict.items():
+            key = key.lower()
+            setattr(self,key,value)
+
+    def collect_link(self):
+        
+        if self.link is not None:                  
+            
+            self.forward = self.link[0]
+        else:
+            pass
+
+            
 
    
             
@@ -246,10 +324,3 @@ class Wheel():
 
 
 
-
-    
-
-        
-              
-        
-       

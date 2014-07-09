@@ -1,0 +1,17 @@
+---
+itm_hammer:
+        name: 
+        - A hammer
+        - A small tool / exam_hammer=0
+        left:
+        - usehammer
+        - hammer_hard / smash=1
+        right:
+        - examhammer
+
+itm_nail:
+        name:
+        - A nail
+        left:
+        - examine_nail
+
