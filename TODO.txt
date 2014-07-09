@@ -8,3 +8,7 @@ Week 2
 - finalize flag system and effects
 - work on text variations
 - begin work on inv and clu classes
+(ALL DONE! 9.7. 2014)
+
+Week 3
+- add save and restore functionality
