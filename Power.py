@@ -6,6 +6,14 @@ from os.path import dirname
 import random
 import time
 import yaml
+import sys
+
+RESOURCES = os.path.join(dirname(__file__), "resources",)
+DATA = os.path.join(dirname(__file__), "data",)
+SYSTEM = os.path.join(dirname(__file__), "system")
+SAVE = os.path.join(dirname(__file__), "save")
+sys.path.insert(0, SYSTEM)
+
 from flags import Flags, Flag
 from state import State
 from scene import Scene, Line, Link, Title
@@ -13,6 +21,7 @@ from wheel import Wheel, Wlink, Anchor
 from inventory import Inventory
 from combiner import Combiner, Combination 
 from tools import glyph_links
+from menu import Menu
 from glyph import Editor, Glyph, Macros, Text
 from pygame import display
 from pygame import event
@@ -24,28 +33,21 @@ from pygame.locals import *
 
 pygame.init()
 
-# path constants
-DIRNAME = os.path.join(dirname(__file__), "resources",)
-
 # screen constants
 SCREEN_SIZE = (1000, 640)
-SCREEN = display.set_mode(SCREEN_SIZE, FULLSCREEN)
+SCREEN = display.set_mode(SCREEN_SIZE)
 
 # image constants
 BKGSCREEN = pygame.Surface(SCREEN_SIZE)
 BKGSCREEN = BKGSCREEN.convert()
-background = pygame.Surface(SCREEN_SIZE)
-background = background.convert()
-# background.fill((0,0,0))
-
 
 #glyph constants
-FONT = Font(os.path.join(DIRNAME, "font", "advert.ttf"), 14)
+FONT = Font(os.path.join(RESOURCES, "font", "advert.ttf"), 14)
 DEFAULT = {
     'bkg'       : (0,0,0),
     'color'     : (201, 192, 187),
     'font'      : FONT,
-    'spacing'   : 2, #FONT.get_linesize(),
+    'spacing'   : 2, 
 }
 
 #functions
@@ -54,9 +56,7 @@ def center(surf, rect):
     surfrect = surf.get_rect()
     rect.x = ((surfrect.w / 2) - (rect.w / 2))
     rect.y = ((surfrect.h / 2) - (rect.h / 2))
-
             
-
 #prepare rects and surfaces
 CLIP = Rect(0, 0, 560, 320)
 center(BKGSCREEN, CLIP)
@@ -65,12 +65,9 @@ COMPRECT = Rect(412,530,150,150)
 BKGSCREEN.set_clip(None) #prej clip
 BKGSCREEN.fill((0,0,0))
 
-
 CLIP.w -= 10
 CLIP.h -= 10
 center(BKGSCREEN, CLIP)
-
-
 
 # prepare cursors
 #the default cursor
@@ -97,39 +94,34 @@ _HAND_CURSOR = (
 _HCURS, _HMASK = pygame.cursors.compile(_HAND_CURSOR, ".", "X")
 HAND_CURSOR = ((16, 16), (5, 1), _HCURS, _HMASK)
 
-click_delay = 500
-double_delay = 100
-
-clock = pygame.time.Clock()
-
-scenestream = file("scenes.yml", "r")
+scenestream = file(os.path.join(DATA, "scenes.yml"), "r")
 SCENES = yaml.load(scenestream)
 scenestream.close()
-linkstream = file("links.yml", "r")
+linkstream = file(os.path.join(DATA, "links.yml"), "r")
 LINKS = yaml.load(linkstream)
 linkstream.close()
-flagstream = file("flags.yml", "r")
+flagstream = file(os.path.join(DATA, "links.yml"), "r")
 FLAGS = yaml.load(flagstream)
 flagstream.close()
-itemstream = file("items.yml", "r")
+itemstream = file(os.path.join(DATA, "items.yml"), "r")
 ITEMS = yaml.load(itemstream)
 itemstream.close()
-cluestream = file("clues.yml", "r")
+cluestream = file(os.path.join(DATA, "clues.yml"), "r")
 CLUES = yaml.load(cluestream)
 cluestream.close()
-combinationstream = file("combinations.yml", "r")
+combinationstream = file(os.path.join(DATA, "combinations.yml"), "r")
 COMBINATIONS = yaml.load(combinationstream)
 combinationstream.close()
 
 flags = Flags(FLAGS)
-wheel = Wheel(SCREEN, SCREEN_SIZE)
-title = Title(SCREEN, SCREEN_SIZE)
-inventory = Inventory(ITEMS, CLUES, flags, SCREEN, SCREEN_SIZE)
+wheel = Wheel(SCREEN, SCREEN_SIZE, RESOURCES)
+title = Title(SCREEN, SCREEN_SIZE, RESOURCES)
+inventory = Inventory(ITEMS, CLUES, flags, SCREEN, SCREEN_SIZE, RESOURCES)
 combiner = Combiner(COMBINATIONS, flags)
 state = State(SCENES, LINKS, flags, inventory, wheel, combiner, title)
-state.update("heaven")
+menu = Menu(SCREEN, SCREEN_SIZE, RESOURCES, SAVE, state)
+state.update("field")
 pagetext = state.output
-
 
 class Main():
 
@@ -143,7 +135,6 @@ class Main():
 
         """
         SCREEN.blit(BKGSCREEN, (0, 0))
-        SCREEN.blit(background, (0,0))
         
         def find_macros(text, Macros):
             macros = []            
@@ -164,18 +155,17 @@ class Main():
             glyph.input(input, justify = 'justified')
             glyph.update()
                
-        chdir(DIRNAME)
+
         glyph = self.glyph
         glyph_rect = glyph.rect
         glyph.image.set_alpha(255)        
-        glyph_draw(state.output, None)
-        wheel.draw()
+        glyph_draw(state.output, None) 
                      
         while 1:            
             mpos = mouse.get_pos()
             mrect = Rect(mpos, (1,1))  
-            lnk_click = glyph.get_collisions(mouse.get_pos())           
-                     
+            lnk_click = glyph.get_collisions(mouse.get_pos())
+            menu_click = menu.get_collisions(mrect)               
             whl_click = wheel.get_collisions(mrect)  
             inv_click = inventory.get_collisions(mrect)
                             
@@ -186,28 +176,36 @@ class Main():
                 glyph_draw(state.output, None)
                 mouse.set_cursor(*DEFAULT_CURSOR)
 
-            SCREEN.blit(glyph.image, glyph_rect)            
+            SCREEN.blit(glyph.image, glyph_rect) 
+            menu.draw()           
             state.draw()
             state.inventory.get_collisions(mrect)
 
             if inv_click[0] is not None:
                 state.inventory.draw_selection(*inv_click)
-        
+            if menu_click is not None:
+                menu.draw_selection(menu_click)
+
             for ev in event.get():
 
                 if ev.type == MOUSEBUTTONDOWN:
                     if ev.button == 1:
-                        state.input(lnk_click, whl_click, inv_click, "left", "down")
-                        
+                        if menu_click is 3: exit()
+                        menu.set_focus(menu_click)
+                        state.input(lnk_click, whl_click, inv_click,"left", "down")                        
 
                 if ev.type == MOUSEBUTTONUP:
                     if ev.button == 1:
-                        state.input(lnk_click, whl_click, inv_click, "left", "up")
-
+                        state.input(lnk_click, whl_click, inv_click,"left", "up")
                     if ev.button == 3: 
-                        state.input(lnk_click, whl_click, inv_click, "right", "up")
+                        state.input(lnk_click, whl_click, inv_click,"right", "up")
                                      
-                if ev.type == KEYDOWN: exit()               
+                if ev.type == KEYDOWN: 
+
+                    if ev.key == K_ESCAPE: 
+                        if menu.focus == None: exit() 
+                    else:                                            
+                        menu.input(ev.key)              
 
             display.update()
 

@@ -12,3 +12,8 @@ Week 2
 
 Week 3
 - add save and restore functionality
+(HALF DONE! 13.7. 2014)
+
+Week 4
+- complete "save and restore state" functions
+- start work on Prologue and basic clue reveal mechanics

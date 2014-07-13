@@ -199,7 +199,8 @@ class Link():
         self.right = right
 
 class Title():
-    def __init__(self, screen, size):               
+    def __init__(self, screen, size, folder):
+        self.folder = folder               
         self.screen = screen
         self.size = size
         self.find_position()
@@ -224,7 +225,7 @@ class Title():
         from os import chdir
         from os.path import dirname
         DIRNAME = os.path.join(dirname(__file__), "resources",) 
-        font = pygame.font.Font(os.path.join(DIRNAME, "font", "advert.ttf"), self.text_size)  
+        font = pygame.font.Font(os.path.join(self.folder, "font", "advert.ttf"), self.text_size)  
         screen = self.screen    
         name = self.name  
         txtcolor = self.color 

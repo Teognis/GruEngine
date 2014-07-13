@@ -1,6 +1,7 @@
 class Inventory():
 
-        def __init__(self, itm_data, clu_data, flags, screen, size):
+        def __init__(self, itm_data, clu_data, flags, screen, size, folder):
+            self.folder = folder
             self.itm_data = itm_data
             self.clu_data = clu_data
             self.flags = flags            
@@ -79,9 +80,9 @@ class Inventory():
             screen = self.screen
             txt_color = self.txt_color
             size = self.txt_size
-            DIRNAME = os.path.join(dirname(__file__), "resources",)
+            # DIRNAME = os.path.join(dirname(__file__), "resources",)
 
-            font = pygame.font.Font(os.path.join(DIRNAME, "font", "advert.ttf"), size)
+            font = pygame.font.Font(os.path.join(self.folder, "font", "advert.ttf"), size)
             
             text = font.render("ITEMS", 0, txt_color)
             rect = text.get_rect()
@@ -145,8 +146,7 @@ class Inventory():
             import os
             from os import chdir
             from os.path import dirname
-            DIRNAME = os.path.join(dirname(__file__), "resources",)
-            font = pygame.font.Font(os.path.join(DIRNAME, "font", "advert.ttf"), self.txt_size)
+            font = pygame.font.Font(os.path.join(self.folder, "font", "advert.ttf"), self.txt_size)
             color = (135,13,145)
             screen = self.screen
             text = item.name

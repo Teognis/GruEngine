@@ -18,7 +18,7 @@ class State():
         self.combiner = combiner
         self.flags= flags
         self.wheel = wheel
-        self.title = title                     
+        self.title = title                   
         self.parents = []
         self.previous = None  
         self.scene = None 
@@ -117,7 +117,7 @@ class State():
         if i_click[0] is not None:
             input_id = i_click[0].id
             input_type = "inv"
-
+            
         return input_id, input_type
 
 
@@ -156,4 +156,5 @@ class State():
         self.wheel.draw()
         self.title.draw()
         self.inventory.draw()
+        
 

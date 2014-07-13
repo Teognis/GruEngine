@@ -1,7 +1,9 @@
 class Wheel():
  
-    def __init__(self, screen, size):
+    def __init__(self, screen, size, folder):
         #creates an instance of a Wheel (that takes into account the screen coordinates)
+       
+        self.folder = folder
         self.links = []
         self.screen = screen
         self.size = size
@@ -20,11 +22,7 @@ class Wheel():
         self.exit_size = 14
         self.button_size = 17
         self.scene = None
-        
-        
-##        self.linkpos = [(self.x/2,self.ypos + 50),(self.x/2 + 30,self.ypos + 30),(self.x/2 + 60,self.ypos),(self.x/2 + 30,self.ypos - 30),(self.x/2,self.ypos - 50),(self.x/2 - 30,self.ypos - 30),(self.x/2 - 60,self.ypos),(self.x/2 - 30,self.ypos + 30)]
-        
-        
+               
           
     def find_positions(self):                   #automatically finds coordinates for triangles, links, buttons, etc.
         padding = self.padding
@@ -63,11 +61,12 @@ class Wheel():
         from os import chdir
         from os.path import dirname
         screen = self.screen
-        DIRNAME = os.path.join(dirname(__file__), "resources",)
+        # DIRNAME = os.path.join(dirname(__file__), "resources",)
+        # print DIRNAME
         BKGSCREEN = pygame.Surface(self.size)
         BKGSCREEN = BKGSCREEN.convert()
         BKGSCREEN.fill((0,0,0))
-        TRIANGLE = pygame.image.load(os.path.join(DIRNAME, "img", "ptriangle.png"))
+        TRIANGLE = pygame.image.load(os.path.join(self.folder, "img", "ptriangle.png"))
         TRI_N = pygame.transform.smoothscale(TRIANGLE, (25,25))       
         TRI_NW = pygame.transform.rotate(TRI_N, 45)
         TRI_W = pygame.transform.rotate(TRI_N,90)
@@ -108,10 +107,8 @@ class Wheel():
         screen.blit(TRI_S,tri_s_rect)
         screen.blit(TRI_SW,tri_sw_rect)
         screen.blit(TRI_W,tri_w_rect)
-        screen.blit(TRI_NW,tri_nw_rect)
-        
-       
-        
+        screen.blit(TRI_NW,tri_nw_rect)     
+               
     def draw_exits(self):
         import pygame
         import itertools
@@ -120,8 +117,7 @@ class Wheel():
         from os.path import dirname
         screen = self.screen
         txtcolor = self.exit_color
-        DIRNAME = os.path.join(dirname(__file__), "resources",)
-        font = pygame.font.Font(os.path.join(DIRNAME, "font", "advert.ttf"), self.exit_size)
+        font = pygame.font.Font(os.path.join(self.folder, "font", "advert.ttf"), self.exit_size)
 
         def linkrect_position(key, rect, coord):
             if key == 0:
@@ -164,7 +160,7 @@ class Wheel():
         DIRNAME = os.path.join(dirname(__file__), "resources",)        
         txtcolor = self.button_color 
         coord = (self.wheel_x, self.wheel_y)    
-        font = pygame.font.Font(os.path.join(DIRNAME, "font", "advert.ttf"), self.button_size)      
+        font = pygame.font.Font(os.path.join(self.folder, "font", "advert.ttf"), self.button_size)      
         
         
         if self.scene.anchor.type is not None:            
