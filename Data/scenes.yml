@@ -1,4 +1,17 @@
 ---
+start:
+    type: location
+    output:
+        - 
+            - txt: Welcome to Power! A world of adventure awaits you!
+    wheel:
+        0:
+            txt:
+            - To field
+            left:
+            - field
+            right:
+            - field
 usehammer:
     type: location
     output:

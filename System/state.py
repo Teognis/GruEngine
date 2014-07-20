@@ -22,18 +22,51 @@ class State():
         self.parents = []
         self.previous = None  
         self.scene = None 
-                    
+        self.snapshot = None                    
 
     def generate(self, name):
         from scene import Scene      
         scene = Scene(name, self.scenedata[name], self.flags) 
         scene.name = name          
         return scene
+
+    def save(self, scene):
+        filedict = {}
+        flags = {}
+        previous = None
+        if self.scene is not None:        
+            previous = self.scene.name 
+        for key, value in self.flags.__dict__.items():
+            flags[key] = value      
+        filedict["flags"] = flags
+        filedict["scene"] = scene
+        filedict["previous"] = previous
+        self.snapshot = filedict      
+
+    def reset(self):
+        self.flags.reset()
+        self.previous = None
+        self.scene = None
+        
+
+    def restore(self, filedict):
+        self.reset()
+        self.previous = filedict["previous"]
+        flags = filedict["flags"]
+        for key, value in flags.items():
+            setattr(self.flags, key, value)
+        scene = filedict["scene"]
+        self.update(scene)
+        # for key, value in dict.items():
+        #         key = key.lower()
+        #         setattr(self,key,value)
+
         
     def update(self, name):      
         from wheel import Wheel
         if self.scene is not None:        
-            self.previous = self.scene.name                           
+            self.previous = self.scene.name
+        self.save(name)                           
         scene = self.generate(name) 
         cutscene = scene.cutscenes.destination
         if cutscene is not None:

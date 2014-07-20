@@ -12,6 +12,7 @@ class Scene():
         self.effects = []
         self.segments = []
         self.variations = []
+        self.anchor = None
         self.set_attributes(self.data)                      
         self.collect()
         self.finalize()
@@ -56,8 +57,11 @@ class Scene():
             self.effects = format_effs(self.effects)
 
     def collect_anchor(self):             
-        from wheel import Anchor        
-        self.anchor = Anchor(self.anchor, self.flags)
+        from wheel import Anchor
+        if self.data.has_key("anchor"):        
+            self.anchor = Anchor(self.anchor, self.flags)
+        else:
+            pass
 
     def collect_cutscenes(self):
         from scene import Cutscene

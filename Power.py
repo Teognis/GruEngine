@@ -100,7 +100,7 @@ scenestream.close()
 linkstream = file(os.path.join(DATA, "links.yml"), "r")
 LINKS = yaml.load(linkstream)
 linkstream.close()
-flagstream = file(os.path.join(DATA, "links.yml"), "r")
+flagstream = file(os.path.join(DATA, "flags.yml"), "r")
 FLAGS = yaml.load(flagstream)
 flagstream.close()
 itemstream = file(os.path.join(DATA, "items.yml"), "r")
@@ -120,7 +120,7 @@ inventory = Inventory(ITEMS, CLUES, flags, SCREEN, SCREEN_SIZE, RESOURCES)
 combiner = Combiner(COMBINATIONS, flags)
 state = State(SCENES, LINKS, flags, inventory, wheel, combiner, title)
 menu = Menu(SCREEN, SCREEN_SIZE, RESOURCES, SAVE, state)
-state.update("field")
+menu.new_game()
 pagetext = state.output
 
 class Main():
@@ -190,7 +190,8 @@ class Main():
 
                 if ev.type == MOUSEBUTTONDOWN:
                     if ev.button == 1:
-                        if menu_click is 3: exit()
+                        if menu_click is 0: menu.new_game()
+                        elif menu_click is 3: exit()
                         menu.set_focus(menu_click)
                         state.input(lnk_click, whl_click, inv_click,"left", "down")                        
 
@@ -203,7 +204,11 @@ class Main():
                 if ev.type == KEYDOWN: 
 
                     if ev.key == K_ESCAPE: 
-                        if menu.focus == None: exit() 
+                        if menu.focus == None: 
+                            exit() 
+                        else:
+                            menu.input(ev.key)
+                        
                     else:                                            
                         menu.input(ev.key)              
 

@@ -11,7 +11,12 @@ class Flags():
         else:
             data = {}        
         flag = Flag(name,data)
-        return flag     
+        return flag
+
+    def reset(self):
+        flagdata = self.__flagdata__
+        self.__dict__.clear()  
+        self.__flagdata__ = flagdata   
   
     
     def set(self, key, operator, value):        

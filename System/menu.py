@@ -158,13 +158,14 @@ class Menu():
             elif key == "return":
                 filename = self.get_text()
                 if focus == "save":
-                    self.save_state(filename)
+                    self.save_game(filename)
                 elif focus == "restore":
-                    self.restore_state(filename)
+                    self.restore_game(filename)
                 self.__dict__[focus] = []
                 self.focus = None     
             else:            
                 self.__dict__[focus].append(key)
+        
     
     def get_text(self):
         text = ""
@@ -172,7 +173,6 @@ class Menu():
         for key in self.__dict__[focus]:
             text = text+key
         return text
-
 
     def draw_input(self):
         import pygame
@@ -191,35 +191,37 @@ class Menu():
                 rect.topleft = self.save_coord
             elif focus == "restore":
                 rect.topleft = self.restore_coord
-            self.input_rect.append(rect)
-            
+            self.input_rect.append(rect)            
             self.screen.blit(surf, rect) 
 
-    def save_state(self, filename):
+    def save_game(self, filename):
+        import pickle
         import os
         from os import chdir
         from os.path import dirname
-        newname = filename + ".txt"
-        file_path = os.path.join(self.save_folder, newname)
-        f = open(file_path, "w")   
-        f.write( "SAVED STATE")    
-        f.close()
+        newname = filename + ".p"
+        file_path = os.path.join(self.save_folder, newname)   
+        data = self.state.snapshot
+        pickle.dump(data, open(file_path, "wb"))
 
-    def restore_state(self, filename):
+    def restore_game(self, filename):
+        import pickle
         import os
         from os import chdir
         from os.path import dirname
-        newname = filename + ".txt"
+        newname = filename + ".p"
         file_path = os.path.join(self.save_folder, newname)
-        if os.path.isfile(file_path) is True:       
-            f = open(file_path, "r")  
-            for i in f.readlines():
-                print i
-            f.close()
+        if os.path.isfile(file_path) is True:
+            data = pickle.load(open(file_path, "rb"))   
+            self.state.restore(data) 
         else:
             print "File " + newname + " does not exist!"
-        
 
+        
+    def new_game(self):
+        self.state.reset()
+        self.state.update("start")
+        
 
 
 

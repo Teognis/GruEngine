@@ -163,7 +163,7 @@ class Wheel():
         font = pygame.font.Font(os.path.join(self.folder, "font", "advert.ttf"), self.button_size)      
         
         
-        if self.scene.anchor.type is not None:            
+        if self.scene.anchor is not None:            
             word = self.scene.anchor.type
             text = font.render(word, 1, txtcolor)        
             rect = text.get_rect()

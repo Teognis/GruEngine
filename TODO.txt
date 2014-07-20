@@ -17,3 +17,7 @@ Week 3
 Week 4
 - complete "save and restore state" functions
 - start work on Prologue and basic clue reveal mechanics
+(HALF DONE! 20.7. 2014)
+
+Week 5
+- work paused (due to woodsman.py)
