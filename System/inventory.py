@@ -180,18 +180,18 @@ class Inventory():
 class Item():
     def __init__(self, data, id, flags):
         self.status = 0
-        self.id = id        
+        self.id = id  
+        self.reveal = []    
         self.data = data
         self.flags = flags
-        self.update()     
-  
+        self.update()        
+             
 
     def default_data(self):
         self.left = [self.id + ": left"]
         self.right = [self.id + ": right"]
         self.name = [self.id] 
-
-
+        
     def set_attributes(self, data):
         for key, value in data.items():
             key = key.lower()
@@ -212,6 +212,8 @@ class Item():
         self.format("name")
         self.format("left")
         self.format("right")
+        self.format("reveal")
+        
 
     def format(self, attribute):
         from tools import req_format      
@@ -258,6 +260,7 @@ class Item():
         self.format_all()
         self.finalize()
         self.status_check()
+        
 
 from inventory import Item
 class Clue(Item):

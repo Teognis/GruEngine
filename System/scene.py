@@ -146,10 +146,16 @@ class Line():
             else:
                 return True
         return True
+    def txt_format(self):
+        self.txt = self.txt.replace(";",":")
+        self.txt = self.txt.replace("::", ";")
+        
 
     def finalize(self):
-        self.effects = self.eff        
+        self.effects = self.eff  
+                   
         if self.check() == True:
+            self.txt_format()
             self.output = self.txt
             
 class Link():
@@ -159,10 +165,12 @@ class Link():
         self.name = name
         self.data = copy.deepcopy(data[name])     
         self.flags = flags
+       
         self.set_attributes(self.data)
         self.format("left")
-        self.format("right")
+        self.format("right")        
         self.finalize()
+        
     
     def set_attributes(self, data):              
         for key, value in data.items():

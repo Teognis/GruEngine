@@ -87,10 +87,17 @@ class Flag():
 
     def __init__(self, name, data):
         self.name = name
-        self.default = 0
+        self.set_default()
         self.min = 0
         self.max = 1
         self.set_attributes(data)
+
+    def set_default(self):
+        if self.name.startswith("lnk_"):
+            default = 1
+        else:
+            default = 0
+        self.default = default
 
     def set_attributes(self, dict):
         if dict is not None:

@@ -2,3 +2,6 @@
 itm_nail + lnk_graves:
     - field
     - heaven / clu_smash=1
+
+clu_smash + lnk_mailbox:
+    - heaven

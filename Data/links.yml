@@ -5,6 +5,8 @@ lnk_mailbox:
         - mailbox_fire / mailfire=1 goblin=1 
     right:
         - examine_mailbox
+    reveal:
+        - clu_smash / goblin=1
 
 lnk_graves:
     left:

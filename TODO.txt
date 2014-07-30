@@ -20,4 +20,9 @@ Week 4
 (HALF DONE! 20.7. 2014)
 
 Week 5
-- work paused (due to woodsman.py)
+- basic reveal functionality
+- working hidden links
+(WORK RESUMED! 30.7. 2014)
+
+Week 6
+- begin work on key vignettes

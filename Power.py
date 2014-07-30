@@ -50,6 +50,11 @@ DEFAULT = {
     'spacing'   : 2, 
 }
 
+color_text = (201, 192, 187)
+color_active = (135, 13, 145)
+color_selected = (255, 255, 255)
+
+
 #functions
 def center(surf, rect):
 # centers rectangles on a specified axis on a surface
@@ -134,7 +139,8 @@ class Main():
         """
 
         """
-        SCREEN.blit(BKGSCREEN, (0, 0))
+        SCREEN.blit(BKGSCREEN, (0, 0))      
+       
         
         def find_macros(text, Macros):
             macros = []            
@@ -144,14 +150,22 @@ class Main():
                     word = word.rstrip(";")
                     macros.append(word)
             for link in macros:
-                Macros[link] = ('color',(135,13,145))           
+                if flags.check(link, "=", 1):
+                    color = color_active
+                else:
+                    color = color_text            
+                Macros[link] = ("color", color)           
    
         
-        def glyph_draw(input, link):
+        def glyph_draw(input, link, flags):
             glyph.clear(SCREEN, BKGSCREEN)
             find_macros(input, Macros)
-            if link is not None:
-                Macros[link] = ('color', (255,255,255))            
+            if link is not None:                
+                if flags.check(link, "=", 1):
+                    color = color_selected
+                else:
+                    color = color_text          
+                Macros[link] = ("color", color)          
             glyph.input(input, justify = 'justified')
             glyph.update()
                
@@ -159,7 +173,7 @@ class Main():
         glyph = self.glyph
         glyph_rect = glyph.rect
         glyph.image.set_alpha(255)        
-        glyph_draw(state.output, None) 
+        glyph_draw(state.output, None, flags) 
                      
         while 1:            
             mpos = mouse.get_pos()
@@ -170,10 +184,10 @@ class Main():
             inv_click = inventory.get_collisions(mrect)
                             
             if lnk_click:              
-                glyph_draw(state.output, lnk_click)                
-                mouse.set_cursor(*HAND_CURSOR)
+                glyph_draw(state.output, lnk_click, flags)   
+                if flags.check(lnk_click, "=", 1): mouse.set_cursor(*HAND_CURSOR)                                
             else:             
-                glyph_draw(state.output, None)
+                glyph_draw(state.output, None, flags)
                 mouse.set_cursor(*DEFAULT_CURSOR)
 
             SCREEN.blit(glyph.image, glyph_rect) 
@@ -181,10 +195,8 @@ class Main():
             state.draw()
             state.inventory.get_collisions(mrect)
 
-            if inv_click[0] is not None:
-                state.inventory.draw_selection(*inv_click)
-            if menu_click is not None:
-                menu.draw_selection(menu_click)
+            if inv_click[0] is not None: state.inventory.draw_selection(*inv_click)
+            if menu_click is not None: menu.draw_selection(menu_click)
 
             for ev in event.get():
 

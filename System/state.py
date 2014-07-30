@@ -86,7 +86,11 @@ class State():
         input_id, input_type = self.determine_input(l_click, w_click, i_click)
 
         if input_id is not None and input_type is not "whl":
-            self.combiner.input(input_id)
+            if input_type is "lnk": 
+                if self.check_link(input_id):                                                          
+                    self.combiner.input(input_id)
+            else:
+                self.combiner.input(input_id)
 
         if button == "up":
             destination, found_combination, warning = self.combiner.check()
@@ -96,6 +100,24 @@ class State():
                 self.follow(destination)
             elif found_combination == 0:
                 print warning
+
+    def check_link(self, link):
+        from tools import check_flags
+        if len(self.combiner.box) == 0:
+            if self.flags.check( link, "=" , 1 ):
+                return True
+        elif len(self.combiner.box) == 1:
+            item_id = self.combiner.box[0]            
+            for entity in self.inventory.pool:
+                if entity.id == item_id:
+                    item = entity
+                    for revealed_link in item.reveal:
+                        if revealed_link[0] == link:
+                            if check_flags(revealed_link, self.flags):
+                                return True
+        else:
+            return False
+
 
     def scene_input(self, input_id, input_type, direction):
         from scene import Link

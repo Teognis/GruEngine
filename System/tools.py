@@ -104,3 +104,16 @@ def eff_format(text):
     text = list_effs(text)
     output = format_effs(text)
     return output
+
+
+def check_flags(line, flags):
+        
+        reqs = line[1]
+        if reqs == []:
+            return True
+        else:
+            for req in reqs:            
+                if flags.check(*req) == False:
+                    return False
+                else:
+                    return True

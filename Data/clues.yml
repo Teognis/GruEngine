@@ -6,4 +6,6 @@ clu_smash:
         - route_think
         right:
         - route_exam
+        reveal:
+        - lnk_mailbox / goblin=1
 

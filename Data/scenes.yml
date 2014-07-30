@@ -75,10 +75,11 @@ graveyard:
     title: Graveyard
     output:
         -
-            - txt: There are some <graves/lnk_graves> here! BEWARE!
-              eff: goblin=4
+            -   txt: There are some <graves/lnk_graves> here! The note says; "BEWARE!"
+                req: zombie=1
+                eff: goblin=4
 
-    effects: clu_smash=0 itm_hammer=0
+    effects: clu_smash=0 itm_hammer=0 lnk_mailbox=1
 
     anchor:
         type: Back 

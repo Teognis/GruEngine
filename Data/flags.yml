@@ -30,3 +30,9 @@ clu_smash:
 
 itm_nail:
     default: 1
+
+lnk_mailbox:
+    default: 0
+
+goblin:
+    default: 1
