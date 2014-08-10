@@ -13,6 +13,7 @@ class Menu():
         self.focus_color = (201, 145, 100)
         self.txt_size = 16
         self.text = ["New game", "Save", "Restore", "Quit"]
+        self.menu_id = ["mnu_new", "mnu_save", "mnu_restore", "mnu_quit"]
         self.rects = []
         self.find_positions()
         self.focus = None
@@ -96,6 +97,7 @@ class Menu():
     def get_collisions(self, mrect):                         #detects if the user is hovering over a wheel rectangle
         index = mrect.collidelist(self.rects)
         if index is not -1:
+            # index = self.menu_id[index]
             return index
 
     def draw_selection(self, index):
@@ -129,19 +131,31 @@ class Menu():
             text = font.render(text, 0, color)  
             screen.blit(text, rect)
 
-    def set_focus(self, index):
-        if index == 0:
+    def set_focus(self, menu_id):
+
+        if menu_id == "mnu_new":
             pass
-        if index == 1:
+        elif menu_id == "mnu_save":
             self.focus = "save"
-        elif index == 2:
+        elif menu_id == "mnu_restore":
             self.focus = "restore"
-        elif index == 3:
+        elif menu_id == "mnu_quit":
             pass
         else:
             self.focus = None
 
-    def input(self, key):
+    def input(self, collisions, direction, button):
+        input_id, input_type = collisions 
+        if input_type == "mnu":        
+            self.set_focus(input_id)
+            if input_id == "mnu_new":
+                self.new_game()
+            elif input_id == "mnu_quit":
+                exit()
+        else:
+            self.state.input(input_id, input_type, direction, button)
+
+    def enter(self, key):
         import pygame
         key = pygame.key.name(key)
         focus = self.focus

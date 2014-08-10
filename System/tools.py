@@ -13,7 +13,7 @@ def glyph_links(text):              #creates Glyph markup out of Grue markup :)
                 linklist.append(word)
     for i in linklist:
         tpl = i.split("/")
-        tuples.append(tpl)
+        tuples.append(tpl)    
     
     for i in tuples:
         word = i[0]
@@ -21,9 +21,11 @@ def glyph_links(text):              #creates Glyph markup out of Grue markup :)
         
         original = word + "/" + link
         oldstring = "<" + original + ">"
-        newstring = "{link "+link+"; {"+link+"; "+word+"}}"          
-        text = text.replace(oldstring, newstring)           
-    return text
+        # newstring = "{link "+link+"; {"+link+"; "+word+"}}"    
+        newstring = "{link "+link+"; {default; "+word+"}}"    
+        # newstring = "{link "+link+";}"  
+        text = text.replace(oldstring, newstring)     
+    return text, tuples
 
 
 def split_reqs(text):

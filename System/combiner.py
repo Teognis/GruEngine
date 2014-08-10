@@ -1,12 +1,13 @@
 class Combiner():
 
-    def __init__(self, data, flags):
+    def __init__(self, data, flags, inventory):
         import copy
         self.data = copy.deepcopy(data)
         self.combinations = {}
         self.flags = flags
         self.populate()
         self.box = []
+        self.inventory = inventory
 
     def generate(self, name):
         from combiner import Combination
@@ -25,23 +26,42 @@ class Combiner():
             self.box.append(item)  
        
     def check(self):
+        
         destination = None
         found_combination = None
         warning = None
-        if len(self.box) == 1:
-            destination = self.box[0]
-            self.box = []
-            # warning = "Only one item in combiner box!"
+        self.box = self.reveal_link(self.box)
         if len(self.box) == 2:
-            if self.box[0] == self.box[1]:
-                destination = self.box[0]
+            if self.box[0] == None:
                 self.box = []
-                # warning = "Items in combiner box are one and the same"
+            elif self.box[0] == self.box[1]:
+                destination = self.box[0]
+                self.box = []  
+                # warning = "Items in combiner box are one and the same"        
             else:
                 destination, found_combination, warning = self.find_combination()
                 self.box = []
 
         return destination, found_combination, warning
+
+    def reveal_link(self, box):
+        from tools import check_flags        
+        if len(box) == 2:
+            if box[0] and box[1] is not None:
+                if box[1].startswith("hdn_"):
+                    link_id = box[1].replace("hdn_","lnk_")
+                    item_id = box[0]
+                    for entity in self.inventory.pool:
+                        if entity.id == item_id:
+                            item = entity
+                            for revealed_link in item.reveal:
+                                if revealed_link[0] == link_id:
+                                    if check_flags(revealed_link, self.flags):                                    
+                                        box[1] = link_id
+        return box
+       
+
+
       
     def find_combination(self):
         key = tuple(self.box)
@@ -58,7 +78,14 @@ class Combiner():
         else:
             item1 = str(key[0])
             item2 = str(key[1])
-            warning = "Combination of " + item1 + " and " + item2 + " wasn't found in yml data!"
+            warning = "Combination of *" + item1 + "* and *" + item2 + "* wasn't found in yml data!"
+            if item2.startswith("hdn_"):
+                warning = "Link *" + item2.replace("hdn_","lnk_") + "* needs to be revealed before it can be interacted with."
+            if item1.startswith("whl_") or item2.startswith("whl_"):
+                warning = "Wheel links cannot be used to form valid combinations!"
+            if item1.startswith("mnu_") or item2.startswith("mnu_"):
+                warning = "Menu links cannot be used to form valid combinations!"
+
 
         return destination, found_combination, warning
                 

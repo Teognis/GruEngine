@@ -22,6 +22,8 @@ from inventory import Inventory
 from combiner import Combiner, Combination 
 from tools import glyph_links
 from menu import Menu
+from collider import Collider
+from page import Page
 from glyph import Editor, Glyph, Macros, Text
 from pygame import display
 from pygame import event
@@ -34,7 +36,8 @@ from pygame.locals import *
 pygame.init()
 
 # screen constants
-SCREEN_SIZE = (1000, 640)
+SCREEN_SIZE = (1000, 800)
+# SCREEN = display.set_mode(SCREEN_SIZE)
 SCREEN = display.set_mode(SCREEN_SIZE)
 
 # image constants
@@ -42,37 +45,13 @@ BKGSCREEN = pygame.Surface(SCREEN_SIZE)
 BKGSCREEN = BKGSCREEN.convert()
 
 #glyph constants
-FONT = Font(os.path.join(RESOURCES, "font", "advert.ttf"), 14)
+FONT = Font(os.path.join(RESOURCES, "font", "advert.ttf"), 15)
 DEFAULT = {
     'bkg'       : (0,0,0),
-    'color'     : (201, 192, 187),
+    'color'     : (200, 200, 200),
     'font'      : FONT,
     'spacing'   : 2, 
 }
-
-color_text = (201, 192, 187)
-color_active = (135, 13, 145)
-color_selected = (255, 255, 255)
-
-
-#functions
-def center(surf, rect):
-# centers rectangles on a specified axis on a surface
-    surfrect = surf.get_rect()
-    rect.x = ((surfrect.w / 2) - (rect.w / 2))
-    rect.y = ((surfrect.h / 2) - (rect.h / 2))
-            
-#prepare rects and surfaces
-CLIP = Rect(0, 0, 560, 320)
-center(BKGSCREEN, CLIP)
-COMPRECT = Rect(412,530,150,150)
-
-BKGSCREEN.set_clip(None) #prej clip
-BKGSCREEN.fill((0,0,0))
-
-CLIP.w -= 10
-CLIP.h -= 10
-center(BKGSCREEN, CLIP)
 
 # prepare cursors
 #the default cursor
@@ -122,107 +101,60 @@ flags = Flags(FLAGS)
 wheel = Wheel(SCREEN, SCREEN_SIZE, RESOURCES)
 title = Title(SCREEN, SCREEN_SIZE, RESOURCES)
 inventory = Inventory(ITEMS, CLUES, flags, SCREEN, SCREEN_SIZE, RESOURCES)
-combiner = Combiner(COMBINATIONS, flags)
-state = State(SCENES, LINKS, flags, inventory, wheel, combiner, title)
+combiner = Combiner(COMBINATIONS, flags, inventory)
+page = Page(DEFAULT, SCREEN, BKGSCREEN, flags)
+state = State(SCENES, LINKS, flags, inventory, wheel, combiner, title, page)
 menu = Menu(SCREEN, SCREEN_SIZE, RESOURCES, SAVE, state)
-menu.new_game()
-pagetext = state.output
+collider = Collider(page,menu,wheel,inventory)
+# menu.new_game()
+
 
 class Main():
 
 #   Example usage of Glyph
 
     def __init__(self):
-        self.glyph = Glyph(CLIP, **DEFAULT)      
-          
+        menu.new_game()
+                               
     def start(self):
         """
 
-        """
-        SCREEN.blit(BKGSCREEN, (0, 0))      
-       
+        """        
         
-        def find_macros(text, Macros):
-            macros = []            
-            text = text.split()
-            for word in text:
-                if word.startswith("lnk_"):
-                    word = word.rstrip(";")
-                    macros.append(word)
-            for link in macros:
-                if flags.check(link, "=", 1):
-                    color = color_active
-                else:
-                    color = color_text            
-                Macros[link] = ("color", color)           
-   
-        
-        def glyph_draw(input, link, flags):
-            glyph.clear(SCREEN, BKGSCREEN)
-            find_macros(input, Macros)
-            if link is not None:                
-                if flags.check(link, "=", 1):
-                    color = color_selected
-                else:
-                    color = color_text          
-                Macros[link] = ("color", color)          
-            glyph.input(input, justify = 'justified')
-            glyph.update()
-               
-
-        glyph = self.glyph
-        glyph_rect = glyph.rect
-        glyph.image.set_alpha(255)        
-        glyph_draw(state.output, None, flags) 
+        clock = pygame.time.Clock()        
                      
-        while 1:            
+        while 1:                
+            clock.tick()
+            # print clock.get_fps()                     
             mpos = mouse.get_pos()
-            mrect = Rect(mpos, (1,1))  
-            lnk_click = glyph.get_collisions(mouse.get_pos())
-            menu_click = menu.get_collisions(mrect)               
-            whl_click = wheel.get_collisions(mrect)  
-            inv_click = inventory.get_collisions(mrect)
-                            
-            if lnk_click:              
-                glyph_draw(state.output, lnk_click, flags)   
-                if flags.check(lnk_click, "=", 1): mouse.set_cursor(*HAND_CURSOR)                                
-            else:             
-                glyph_draw(state.output, None, flags)
-                mouse.set_cursor(*DEFAULT_CURSOR)
-
-            SCREEN.blit(glyph.image, glyph_rect) 
+            mrect = Rect(mpos, (1,1))              
             menu.draw()           
             state.draw()
             state.inventory.get_collisions(mrect)
 
-            if inv_click[0] is not None: state.inventory.draw_selection(*inv_click)
-            if menu_click is not None: menu.draw_selection(menu_click)
-
             for ev in event.get():
 
                 if ev.type == MOUSEBUTTONDOWN:
-                    if ev.button == 1:
-                        if menu_click is 0: menu.new_game()
-                        elif menu_click is 3: exit()
-                        menu.set_focus(menu_click)
-                        state.input(lnk_click, whl_click, inv_click,"left", "down")                        
+                    if ev.button == 1:                      
+                        menu.input(collider.get(), "left", "down")
+                    if ev.button == 3:
+                        menu.input(collider.get(),"right", "up")           
 
                 if ev.type == MOUSEBUTTONUP:
                     if ev.button == 1:
-                        state.input(lnk_click, whl_click, inv_click,"left", "up")
+                        menu.input(collider.get(),"left", "up")
                     if ev.button == 3: 
-                        state.input(lnk_click, whl_click, inv_click,"right", "up")
+                        menu.input(collider.get(),"right", "up")
                                      
                 if ev.type == KEYDOWN: 
-
                     if ev.key == K_ESCAPE: 
                         if menu.focus == None: 
                             exit() 
                         else:
-                            menu.input(ev.key)
-                        
+                            menu.enter(ev.key)                        
                     else:                                            
-                        menu.input(ev.key)              
+                        menu.enter(ev.key)  
+
 
             display.update()
 

@@ -48,7 +48,7 @@ class Wheel():
         x_rightest = center_x + 2 * x_step
         tri_coords = [(x_mid,y_top), (x_right,y_upper),(x_rightest,y_mid),(x_right,y_lower),(x_mid,y_bot),(x_left,y_lower),(x_leftest,y_mid),(x_left,y_upper)]
         self.tri_coords = tri_coords
-        self.blank = [(0,y_top),(y-y_top,x)]
+        self.blank = [(0,y_top - padding),(y-y_top,x)]        
         self.coords = [(x_mid, y_upper),(x_right, y_mid),(x_mid, y_lower),(x_left, y_mid)]
         link_coords = [(x_mid, y_top - l_step),(x_right + l_step, y_upper - l_step),(x_rightest + l_step, y_mid),(x_right + l_step, y_lower + l_step),(x_mid, y_bot + l_step),(x_left - l_step, y_lower + l_step),(x_leftest - l_step, y_mid),(x_left - l_step, y_upper - l_step)]
         self.linkpos = link_coords
@@ -61,13 +61,10 @@ class Wheel():
         from os import chdir
         from os.path import dirname
         screen = self.screen
-        # DIRNAME = os.path.join(dirname(__file__), "resources",)
-        # print DIRNAME
-        BKGSCREEN = pygame.Surface(self.size)
-        BKGSCREEN = BKGSCREEN.convert()
-        BKGSCREEN.fill((0,0,0))
-        TRIANGLE = pygame.image.load(os.path.join(self.folder, "img", "ptriangle.png"))
-        TRI_N = pygame.transform.smoothscale(TRIANGLE, (25,25))       
+        BACKGROUND = pygame.Surface(self.size)
+        BACKGROUND.fill((0,0,0))
+        TRIANGLE = pygame.image.load(os.path.join(self.folder, "img", "ptriangle.png"))  
+        TRI_N = pygame.transform.smoothscale(TRIANGLE, (25,25))     
         TRI_NW = pygame.transform.rotate(TRI_N, 45)
         TRI_W = pygame.transform.rotate(TRI_N,90)
         TRI_SW = pygame.transform.rotate(TRI_N, 135)
@@ -99,7 +96,7 @@ class Wheel():
         tri_w_rect.center = tri_w_coords
         tri_nw_rect = TRI_NW.get_rect()
         tri_nw_rect.center = tri_nw_coords
-        screen.blit(BKGSCREEN,self.blank)
+        screen.blit(BACKGROUND, self.blank)
         screen.blit(TRI_N,tri_n_rect)
         screen.blit(TRI_NE,tri_ne_rect)
         screen.blit(TRI_E,tri_e_rect)
@@ -188,10 +185,12 @@ class Wheel():
         if index_out is not -1:
             items = self.links.keys()   
             # print items, index_out         
-            w_button = items[index_out]           
+            w_button = items[index_out]  
+            w_button = "whl_" + str(w_button)         
                      
         if index_in is not -1:
             w_button = self.button.type
+            w_button = "whl_" + w_button
 
         return w_button
                       

@@ -105,8 +105,9 @@ class Scene():
         for effect in self.effects:
             self.flags.set(*effect)
 
-        output = glyph_links(output)        
+        output, hyperlinks = glyph_links(output)        
         self.output = output
+        self.hyperlinks = hyperlinks
 
 class Line():
     def __init__(self, data, flags):
@@ -147,8 +148,9 @@ class Line():
                 return True
         return True
     def txt_format(self):
-        self.txt = self.txt.replace(";",":")
-        self.txt = self.txt.replace("::", ";")
+        pass
+        # self.txt = self.txt.replace(";",":")
+        # self.txt = self.txt.replace("::", ";")
         
 
     def finalize(self):

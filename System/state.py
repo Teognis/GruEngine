@@ -6,7 +6,7 @@ class State():
     from os.path import dirname
     
 
-    def __init__(self, scenedata, linkdata, flags, inventory, wheel, combiner, title):
+    def __init__(self, scenedata, linkdata, flags, inventory, wheel, combiner, title, page):
 
         from wheel import Wheel
         from scene import Scene
@@ -20,9 +20,11 @@ class State():
         self.wheel = wheel
         self.title = title                   
         self.parents = []
+        self.page = page
         self.previous = None  
         self.scene = None 
-        self.snapshot = None                    
+        self.snapshot = None 
+        self.links = []                  
 
     def generate(self, name):
         from scene import Scene      
@@ -57,9 +59,6 @@ class State():
             setattr(self.flags, key, value)
         scene = filedict["scene"]
         self.update(scene)
-        # for key, value in dict.items():
-        #         key = key.lower()
-        #         setattr(self,key,value)
 
         
     def update(self, name):      
@@ -80,19 +79,18 @@ class State():
             self.inventory.update()
             self.title.update(self.scene.title)     
             self.wheel.update(self.scene)
+            self.links = self.scene.hyperlinks
+            self.page.update(self.output, self.links)
  
 
-    def input(self, l_click, w_click, i_click, direction, button):      
-        input_id, input_type = self.determine_input(l_click, w_click, i_click)
+    def input(self, input_id, input_type, direction, button):                 
+        if input_type == "lnk":
+            input_id = self.check_link(input_id)  
+        if input_type == "mnu" and button == "up":  
+            self.menu.input(input_id)    
+        self.combiner.input(input_id)
 
-        if input_id is not None and input_type is not "whl":
-            if input_type is "lnk": 
-                if self.check_link(input_id):                                                          
-                    self.combiner.input(input_id)
-            else:
-                self.combiner.input(input_id)
-
-        if button == "up":
+        if len(self.combiner.box) == 2:
             destination, found_combination, warning = self.combiner.check()
             if found_combination == None:
                 self.scene_input(input_id, input_type, direction)  
@@ -102,32 +100,24 @@ class State():
                 print warning
 
     def check_link(self, link):
-        from tools import check_flags
-        if len(self.combiner.box) == 0:
-            if self.flags.check( link, "=" , 1 ):
-                return True
-        elif len(self.combiner.box) == 1:
-            item_id = self.combiner.box[0]            
-            for entity in self.inventory.pool:
-                if entity.id == item_id:
-                    item = entity
-                    for revealed_link in item.reveal:
-                        if revealed_link[0] == link:
-                            if check_flags(revealed_link, self.flags):
-                                return True
+        from tools import check_flags        
+        if self.flags.check( link, "=" , 1 ):                
+            return link
         else:
-            return False
-
+            link = link.replace("lnk_","hdn_")
+            return link
 
     def scene_input(self, input_id, input_type, direction):
         from scene import Link
         if input_type == "whl":
+            input_id = input_id.strip("whl_")            
             if input_id == "Back":
                 child = self.scene.name
                 destination = self.find_parent(child)          
             elif input_id == "Continue":
                 destination = self.scene.anchor.forward                    
-            else:            
+            else:          
+                input_id = int(input_id)  
                 wlink = self.scene.links[input_id]
                 if direction == "left":
                     destination = wlink.left               
@@ -144,7 +134,11 @@ class State():
                     destination = link.right
                     self.follow(destination)
             else:
-                print "Key " + str(input_id) + " not in link dictionary!"
+                if input_id.startswith("hdn_"):
+                    link = input_id.replace("hdn_","lnk_")
+                    print "Link *" + str(link) + "* is hidden and cannot be interacted with!"
+                else:
+                    print "Key *" + str(input_id) + "* not in link dictionary!"
         elif input_type == "inv":         
             instance = None
             for item in self.inventory.pool:
@@ -157,23 +151,7 @@ class State():
                 destination = instance.right
                 self.follow(destination)
         else:
-            pass
-        
-
-    def determine_input(self, l_click, w_click, i_click):
-        input_type = None
-        input_id = None
-        if l_click is not None:
-            input_id = l_click
-            input_type = "lnk"
-        if w_click is not None:
-            input_id = w_click
-            input_type = "whl"
-        if i_click[0] is not None:
-            input_id = i_click[0].id
-            input_type = "inv"
-            
-        return input_id, input_type
+            pass        
 
 
     def check_destination(self, destination):
@@ -208,8 +186,10 @@ class State():
                 return parent
     
     def draw(self):
+        self.inventory.draw()
         self.wheel.draw()
         self.title.draw()
-        self.inventory.draw()
+        self.page.draw()
+        
         
 
