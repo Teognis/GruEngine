@@ -83,7 +83,7 @@ class Scene():
 
         
     def finalize(self):
-        from tools import glyph_links                       
+        from tools import glyph_links, hide_link                    
         output = ""
         effects = self.effects
         pool = self.pool  
@@ -102,12 +102,21 @@ class Scene():
             effects = effects + seg_effects
                 
         self.effects = effects
+        self.auto_flag()
         for effect in self.effects:
             self.flags.set(*effect)
 
-        output, hyperlinks = glyph_links(output)        
+        output, hyperlinks = glyph_links(output, self.flags)
         self.output = output
         self.hyperlinks = hyperlinks
+
+    def auto_flag(self):
+        name = self.name
+        effect = [name, "=", "1"]
+        self.effects.append(effect)
+        
+
+
 
 class Line():
     def __init__(self, data, flags):

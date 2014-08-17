@@ -30,3 +30,7 @@ Week 6
 
 Week 7
 - finish work on the Page and Collider classes
+(DONE! 17.8. 2014)
+
+Week 8
+- finish the Library class

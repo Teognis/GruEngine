@@ -6,17 +6,18 @@ class State():
     from os.path import dirname
     
 
-    def __init__(self, scenedata, linkdata, flags, inventory, wheel, combiner, title, page):
+    def __init__(self, stream, flags, inventory, wheel, combiner, title, page):
 
         from wheel import Wheel
         from scene import Scene
         import copy
 
-        self.scenedata = copy.deepcopy(scenedata)
-        self.linkdata = copy.deepcopy(linkdata)
+        self.scenedata = copy.deepcopy(stream.scenes)
+        self.linkdata = copy.deepcopy(stream.links)
         self.inventory = inventory
-        self.combiner = combiner
         self.flags= flags
+        self.combiner = combiner
+        
         self.wheel = wheel
         self.title = title                   
         self.parents = []
@@ -27,7 +28,7 @@ class State():
         self.links = []                  
 
     def generate(self, name):
-        from scene import Scene      
+        from scene import Scene           
         scene = Scene(name, self.scenedata[name], self.flags) 
         scene.name = name          
         return scene

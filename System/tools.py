@@ -1,5 +1,6 @@
 
-def glyph_links(text):              #creates Glyph markup out of Grue markup :)
+def glyph_links(text, flags):              #creates Glyph markup out of Grue markup :)
+    
     linklist = []
     tuples = []
     
@@ -14,18 +15,26 @@ def glyph_links(text):              #creates Glyph markup out of Grue markup :)
     for i in linklist:
         tpl = i.split("/")
         tuples.append(tpl)    
-    
+    counter = 0
     for i in tuples:
         word = i[0]
         link = i[1]
-        
+        index = str(counter) 
+        i.append(index)              
         original = word + "/" + link
-        oldstring = "<" + original + ">"
-        # newstring = "{link "+link+"; {"+link+"; "+word+"}}"    
-        newstring = "{link "+link+"; {default; "+word+"}}"    
-        # newstring = "{link "+link+";}"  
+        oldstring = "<" + original + ">"   
+        newstring = "{link "+index+"; {default; "+word+"}}"   
         text = text.replace(oldstring, newstring)     
+        counter =+ 1
     return text, tuples
+
+def hide_link(link, flags):
+
+    if flags.check(link,"=",1):
+        pass
+    else:
+        link = link.replace("lnk_", "hdn_")        
+    return link
 
 
 def split_reqs(text):
@@ -110,12 +119,10 @@ def eff_format(text):
 
 def check_flags(line, flags):
         
-        reqs = line[1]
-        if reqs == []:
-            return True
+        reqs = line[1]         
+        for req in reqs:            
+            if flags.check(*req) == False:
+                return False
         else:
-            for req in reqs:            
-                if flags.check(*req) == False:
-                    return False
-                else:
-                    return True
+            return True
+

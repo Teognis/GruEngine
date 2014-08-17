@@ -1,8 +1,8 @@
 class Combiner():
 
-    def __init__(self, data, flags, inventory):
+    def __init__(self, stream, flags, inventory):
         import copy
-        self.data = copy.deepcopy(data)
+        self.data = copy.deepcopy(stream.combinations)
         self.combinations = {}
         self.flags = flags
         self.populate()
@@ -21,10 +21,12 @@ class Combiner():
             self.generate(combination)
 
     def input(self, item):   
-        
         if len(self.box) < 2:
-            self.box.append(item)  
-       
+            self.inventory.select(item)
+            self.box.append(item)   
+
+
+               
     def check(self):
         
         destination = None
@@ -33,13 +35,16 @@ class Combiner():
         self.box = self.reveal_link(self.box)
         if len(self.box) == 2:
             if self.box[0] == None:
+                self.inventory.deselect()
                 self.box = []
             elif self.box[0] == self.box[1]:
                 destination = self.box[0]
+                self.inventory.deselect()
                 self.box = []  
                 # warning = "Items in combiner box are one and the same"        
             else:
                 destination, found_combination, warning = self.find_combination()
+                self.inventory.deselect()
                 self.box = []
 
         return destination, found_combination, warning
@@ -55,9 +60,10 @@ class Combiner():
                         if entity.id == item_id:
                             item = entity
                             for revealed_link in item.reveal:
-                                if revealed_link[0] == link_id:
-                                    if check_flags(revealed_link, self.flags):                                    
-                                        box[1] = link_id
+                                if revealed_link[0] == link_id:                                    
+                                    if check_flags(revealed_link, self.flags) == True:                                        
+                                        box[1] = link_id                                        
+        
         return box
        
 

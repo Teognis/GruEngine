@@ -1,4 +1,4 @@
-Power
+GruEngine
 =======
 
-Interactive fiction ( detective / thriller ) game written in Python
+An interactive fiction engine written in Python.

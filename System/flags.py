@@ -1,7 +1,7 @@
 class Flags():
 
-    def __init__(self, flagdata):
-        self.__flagdata__ = flagdata
+    def __init__(self, stream):
+        self.__flagdata__ = stream.flags
 
     def generate(self, name):        
         from flags import Flag

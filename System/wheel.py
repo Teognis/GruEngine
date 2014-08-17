@@ -14,6 +14,7 @@ class Wheel():
         self.x = size[0]
         self.y = size[1]
         self.find_positions()
+        self.prepare_triangles()
         self.focus = "Inner"
         self.state = []
         self.ypos = 650
@@ -53,6 +54,37 @@ class Wheel():
         link_coords = [(x_mid, y_top - l_step),(x_right + l_step, y_upper - l_step),(x_rightest + l_step, y_mid),(x_right + l_step, y_lower + l_step),(x_mid, y_bot + l_step),(x_left - l_step, y_lower + l_step),(x_leftest - l_step, y_mid),(x_left - l_step, y_upper - l_step)]
         self.linkpos = link_coords
 
+    def prepare_triangles(self):
+        import pygame
+        import itertools
+        import os
+        from os import chdir
+        from os.path import dirname
+
+        TRIANGLE = pygame.image.load(os.path.join(self.folder, "img", "ptriangle.png"))  
+        N = pygame.transform.smoothscale(TRIANGLE, (25,25))     
+        NW = pygame.transform.rotate(N, 45)
+        W = pygame.transform.rotate(N,90)
+        SW = pygame.transform.rotate(N, 135)
+        S = pygame.transform.rotate(N,180)
+        SE = pygame.transform.rotate(N,225)
+        E = pygame.transform.rotate(N,270)
+        NE = pygame.transform.rotate(N,315)
+        tri = [N, NE, E, SE, S, SW, W, NW]
+
+        counter = 0
+        triangles = []
+        for triangle in tri:
+
+            triangle_rect = triangle.get_rect()
+            triangle_rect.center = self.tri_coords[counter]
+            triangle = triangle, triangle_rect
+            triangles.append(triangle)
+            counter += 1
+        self.triangles = triangles
+        
+       
+
             
     def draw_triangles(self):
         import pygame
@@ -60,51 +92,15 @@ class Wheel():
         import os
         from os import chdir
         from os.path import dirname
+    
         screen = self.screen
         BACKGROUND = pygame.Surface(self.size)
         BACKGROUND.fill((0,0,0))
-        TRIANGLE = pygame.image.load(os.path.join(self.folder, "img", "ptriangle.png"))  
-        TRI_N = pygame.transform.smoothscale(TRIANGLE, (25,25))     
-        TRI_NW = pygame.transform.rotate(TRI_N, 45)
-        TRI_W = pygame.transform.rotate(TRI_N,90)
-        TRI_SW = pygame.transform.rotate(TRI_N, 135)
-        TRI_S = pygame.transform.rotate(TRI_N,180)
-        TRI_SE = pygame.transform.rotate(TRI_N,225)
-        TRI_E = pygame.transform.rotate(TRI_N,270)
-        TRI_NE = pygame.transform.rotate(TRI_N,315)
-        tri_n_coords = self.tri_coords[0]
-        tri_ne_coords = self.tri_coords[1]
-        tri_e_coords = self.tri_coords[2]
-        tri_se_coords = self.tri_coords[3]
-        tri_s_coords = self.tri_coords[4]
-        tri_sw_coords = self.tri_coords[5]
-        tri_w_coords = self.tri_coords[6]
-        tri_nw_coords = self.tri_coords[7]
-        tri_n_rect = TRI_N.get_rect()
-        tri_n_rect.center = tri_n_coords
-        tri_ne_rect = TRI_NE.get_rect()
-        tri_ne_rect.center = tri_ne_coords
-        tri_e_rect = TRI_E.get_rect()
-        tri_e_rect.center = tri_e_coords
-        tri_se_rect = TRI_SE.get_rect()
-        tri_se_rect.center = tri_se_coords
-        tri_s_rect = TRI_S.get_rect()
-        tri_s_rect.center = tri_s_coords
-        tri_sw_rect = TRI_SW.get_rect()
-        tri_sw_rect.center = tri_sw_coords
-        tri_w_rect = TRI_W.get_rect()
-        tri_w_rect.center = tri_w_coords
-        tri_nw_rect = TRI_NW.get_rect()
-        tri_nw_rect.center = tri_nw_coords
+ 
         screen.blit(BACKGROUND, self.blank)
-        screen.blit(TRI_N,tri_n_rect)
-        screen.blit(TRI_NE,tri_ne_rect)
-        screen.blit(TRI_E,tri_e_rect)
-        screen.blit(TRI_SE,tri_se_rect)
-        screen.blit(TRI_S,tri_s_rect)
-        screen.blit(TRI_SW,tri_sw_rect)
-        screen.blit(TRI_W,tri_w_rect)
-        screen.blit(TRI_NW,tri_nw_rect)     
+        for triangle in self.triangles:
+            surface, rect = triangle
+            screen.blit(surface, rect)
                
     def draw_exits(self):
         import pygame
@@ -139,12 +135,13 @@ class Wheel():
         for key in self.links:           
 
             coord = self.linkpos[key]
-            name = self.links[key].txt            
-            text = font.render(name, 1, txtcolor)        
+            name = self.links[key].txt 
+            color = self.links[key].determine_color()           
+            text = font.render(name, 1, color)        
             rect = text.get_rect()
             rect = linkrect_position(key,rect,coord)
             self.outrects.append(rect)
-            
+            self.links[key].rect = rect            
             screen.blit(text, rect)
 
     def draw_button(self):
@@ -162,10 +159,12 @@ class Wheel():
         
         if self.scene.anchor is not None:            
             word = self.scene.anchor.type
-            text = font.render(word, 1, txtcolor)        
+            color = self.scene.anchor.determine_color()
+            text = font.render(word, 1, color)        
             rect = text.get_rect()
             rect.center = coord
-            self.inrects.append(rect)            
+            self.inrects.append(rect) 
+            self.scene.anchor.rect = rect           
             screen.blit(text, rect)    
 
                                       
@@ -186,11 +185,20 @@ class Wheel():
             items = self.links.keys()   
             # print items, index_out         
             w_button = items[index_out]  
-            w_button = "whl_" + str(w_button)         
+            w_button = "whl_" + str(w_button)          
+
                      
         if index_in is not -1:
             w_button = self.button.type
             w_button = "whl_" + w_button
+       
+
+        for wlink in self.links:
+            self.links[wlink].get_collisions(mrect)
+
+        if self.button is not None:
+            self.button.get_collisions(mrect)
+       
 
         return w_button
                       
@@ -238,6 +246,8 @@ class Wlink():
         self.output("txt")
         self.output("left")
         self.output("right")       
+        self.rect = [0,0,0,0]
+        self.hover = False
         
     
     def output(self, attribute):
@@ -280,6 +290,19 @@ class Wlink():
             key = key.lower()
             setattr(self,key,value)
 
+    def get_collisions(self, mrect):
+        if mrect.colliderect(self.rect):
+            self.hover = True
+        else:
+            self.hover = False
+
+    def determine_color(self):
+        color = (201, 145, 100)
+        if self.hover == True:
+            color = (255,255,255)
+        return color
+        
+
 class Anchor():
     def __init__(self, data, flags):   
         self.flags = flags
@@ -288,6 +311,8 @@ class Anchor():
         self.link = None     
         self.set_attributes(data)
         self.collect_link()
+        self.rect = [0,0,0,0]
+        self.hover = False
 
                            
     def set_attributes(self, dict):
@@ -302,6 +327,18 @@ class Anchor():
             self.forward = self.link[0]
         else:
             pass
+
+    def determine_color(self):
+        color = (200, 200, 200)
+        if self.hover == True:
+            color = (255,255,255)
+        return color
+    
+    def get_collisions(self, mrect):
+        if mrect.colliderect(self.rect):
+            self.hover = True
+        else:
+            self.hover = False 
 
             
 

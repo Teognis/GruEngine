@@ -1,0 +1,17 @@
+gru_type: scenes
+
+graveyardex:
+    type: examination
+    output:
+        -   - txt: The graveyard looks deserted!
+
+    anchor:
+        type: Back
+
+    wheel:
+        0:
+
+            txt:
+            - To field
+            left:
+            - field

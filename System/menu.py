@@ -80,8 +80,12 @@ class Menu():
         counter = 0
         rects = []
         self.clear()
-        for item in self.text:       
-            text = font.render(item, 0, self.txt_color)
+        for item in self.text: 
+            if self.hover == counter:
+                color = (255,255,255)
+            else:
+                color = self.txt_color      
+            text = font.render(item, 0, color)
             rect = text.get_rect()
             if item is not "Quit":
                 rect.topleft = self.coords[counter]
@@ -93,12 +97,16 @@ class Menu():
         self.rects = rects
         self.draw_input()
         self.draw_focus()
+        
 
     def get_collisions(self, mrect):                         #detects if the user is hovering over a wheel rectangle
         index = mrect.collidelist(self.rects)
         if index is not -1:
+            self.hover = index
             # index = self.menu_id[index]
             return index
+        else:
+            self.hover = None
 
     def draw_selection(self, index):
         import pygame

@@ -1,9 +1,9 @@
 class Inventory():
 
-        def __init__(self, itm_data, clu_data, flags, screen, size, folder):
+        def __init__(self, stream, flags, screen, size, folder):
             self.folder = folder
-            self.itm_data = itm_data
-            self.clu_data = clu_data
+            self.itm_data = stream.items
+            self.clu_data = stream.clues
             self.flags = flags            
             self.screen = screen
             self.size = size
@@ -99,27 +99,35 @@ class Inventory():
 
             self.clear()
 
+            
             for item in self.items:
                 x = self.itm_coord[0]
                 y = self.itm_coord[1]
                 itm_counter = itm_counter + self.spacing + self.txt_size
                 name = item.name
-                text = font.render(name, 0, txt_color)
+                color = item.determine_color()                
+                text = font.render(name, 0, color)
                 rect = text.get_rect()
                 rect.topleft = (x,itm_counter)
+                item.rect = rect
                 self.itm_rects.append(rect)
                 screen.blit(text, rect)
+                
 
+            
             for clue in self.clues:
                 x = self.clu_coord[0]
                 y = self.clu_coord[1]
                 clu_counter = clu_counter + self.spacing + self.txt_size
                 name = clue.name
-                text = font.render(name, 0, txt_color)
+                color = clue.determine_color()
+                text = font.render(name, 0, color)
                 rect = text.get_rect()
                 rect.topright = (x,clu_counter)
+                clue.rect = rect
                 self.clu_rects.append(rect)
                 screen.blit(text, rect)
+                
 
         def get_collisions(self, mrect):                         #detects if the user is hovering over a wheel rectangle
             index_itm = mrect.collidelist(self.itm_rects)
@@ -136,27 +144,12 @@ class Inventory():
             if index_clu is not -1:
                 item = self.clues[index_clu]
                 inv_type = "clu"
-                index = index_clu
-                    
-            return item, index, inv_type
+                index = index_clu     
 
-        def draw_selection(self, item, index, inv_type):
-            import pygame
-            import itertools
-            import os
-            from os import chdir
-            from os.path import dirname
-            font = pygame.font.Font(os.path.join(self.folder, "font", "advert.ttf"), self.txt_size)
-            color = (135,13,145)
-            screen = self.screen
-            text = item.name
-            if inv_type == "itm":
-                rects = self.itm_rects
-            elif inv_type == "clu":
-                rects = self.clu_rects
-            rect = rects[index]
-            text = font.render(text, 0, color)  
-            screen.blit(text, rect)          
+            for element in self.pool:
+                element.get_collisions(mrect)       
+            
+            return item, index, inv_type        
 
 
         def clear(self):
@@ -177,6 +170,17 @@ class Inventory():
             self.itm_rects = []
             self.clu_rects = []
 
+        def select(self, item):        
+            for i in self.pool:
+                if item == i.id:
+                    i.selected = True
+ 
+
+        def deselect(self):
+            for item in self.pool:
+                item.selected = False
+
+
 class Item():
     def __init__(self, data, id, flags):
         self.status = 0
@@ -184,7 +188,10 @@ class Item():
         self.reveal = []    
         self.data = data
         self.flags = flags
-        self.update()        
+        self.update()
+        self.hover = False
+        self.selected = False 
+        self.rect = (0,0,0,0)       
              
 
     def default_data(self):
@@ -252,6 +259,23 @@ class Item():
         self.left = left
         self.right = right
 
+    def determine_color(self):
+        color_text = (200, 200, 200)
+        color_selected = (135, 13, 145)
+        color_hover = (255, 255, 255)
+        color = color_text
+        if self.hover == True:        
+            color = color_hover
+        if self.selected == True:
+            color = color_selected
+        return color
+
+    def get_collisions(self, mrect):
+        if mrect.colliderect(self.rect):
+            self.hover = True            
+        else:
+            self.hover = False
+            
 
     def update(self):
 
