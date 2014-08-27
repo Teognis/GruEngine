@@ -1,0 +1,207 @@
+clues:
+  clu_smash:
+    left:
+    - route_think
+    name:
+    - Finding an escape route.
+    reveal:
+    - lnk_mailbox / goblin=2
+    right:
+    - route_exam
+combinations:
+  clu_smash + lnk_mailbox:
+  - heaven
+  itm_nail + lnk_graves:
+  - field
+  - heaven / clu_smash=1
+flags:
+  clu_smash:
+    default: 1
+  goblin:
+    default: 0
+  graveseen:
+    default: 1
+    max: 3
+    min: 0
+  itm_hammer:
+    default: 1
+  itm_nail:
+    default: 1
+  lnk_mailbox:
+    default: 0
+  mailfire:
+    default: 0
+    max: 2
+    min: 0
+  requirement:
+    default: 3
+    max: 5
+    min: 0
+  test:
+    default: 0
+  zombies:
+    default: 1
+    max: 1
+    min: 0
+items:
+  itm_hammer:
+    left:
+    - usehammer
+    - hammer_hard / smash=1
+    name:
+    - A hammer
+    - A small tool / exam_hammer=0
+    right:
+    - examhammer
+  itm_nail:
+    left:
+    - examine_nail
+    name:
+    - A nail
+links:
+  lnk_graves:
+    left:
+    - grave
+    right:
+    - x_grave
+  lnk_mailbox:
+    left:
+    - mailbox
+    - mailbox_fire / mailfire=1 goblin=1
+    reveal:
+    - clu_smash / goblin=1
+    right:
+    - examine_mailbox
+metadata:
+  author: Teognis
+  title: Titan
+scenes:
+  examine_nail:
+    anchor:
+      type: Back
+    output:
+    - - txt: 'You examine the nail very closely! It reads: "He is in there!"'
+  field:
+    anchor:
+      link:
+      - graveyard
+      type: Continue
+    effects: fire=2 clu_smash=1 itm_hammer=1 itm_nail=1
+    output:
+    - - eff: field=2
+        txt: There is a <mailbox/lnk_mailbox> here! Can I write like this maybe? I
+          don't know.
+      - eff: house=3
+        req: goblin=14
+        txt: A <house/lnk_house> is standing here.
+    - - txt: A goblin is shaking about.
+    title: Field
+    type: location
+    wheel:
+      0:
+        left:
+        - graveyard
+        - graveyardambush / zombie=3 vampire=4
+        right:
+        - graveyardex
+        - graveyardsurprise / dude=7
+        txt:
+        - To graveyard
+        - A hidden path / graveseen=1 thisguys=3
+      1:
+        txt:
+        - Toolshed
+      2:
+        txt:
+        - Church
+      3:
+        left:
+        - chapelhall
+        right:
+        - madness
+        txt:
+        - To chapel / thisis=3
+  grave:
+    anchor:
+      type: Back
+    output:
+    - - txt: There is a grave here!
+  graveyard:
+    anchor:
+      type: Back
+    cutscenes:
+    - zombie / zombies=3
+    effects: clu_smash=0 itm_hammer=0 lnk_mailbox=1
+    output:
+    - - eff: gobli=4
+        req: graveyard=1
+        txt: 'How about another type of <love/lnk_love> in the bushes green! There
+          are some <graves/lnk_graves> here! The note says: "BEWARE!"'
+    title: Graveyard
+    type: location
+    wheel:
+      5:
+        left:
+        - field
+        right:
+        - graveyardlook
+        txt:
+        - To field
+      6:
+        left:
+        - heaven
+        txt:
+        - To heaven
+  graveyardex:
+    anchor:
+      type: Back
+    output:
+    - - txt: The graveyard looks deserted!
+    type: examination
+    wheel:
+      0:
+        left:
+        - field
+        txt:
+        - To field
+  heaven:
+    anchor:
+      type: Continue
+    output:
+    - - txt: Please baby! <help/lnk_graves> me out!
+    title: Heaven
+    type: location
+    wheel:
+      1:
+        left:
+        - field
+        txt:
+        - Field
+      7:
+        left:
+        - graveyard
+        txt:
+        - Graveyard
+  start:
+    output:
+    - - txt: This is TITAN!
+    type: location
+    wheel:
+      0:
+        left:
+        - field
+        right:
+        - field
+        txt:
+        - To field
+  usehammer:
+    anchor:
+      type: Back
+    output:
+    - - txt: There is nothing here. Return from whence you came!
+    type: location
+  zombie:
+    anchor:
+      type: Back
+    output:
+    - - txt: I'm here!

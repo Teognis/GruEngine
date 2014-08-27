@@ -16,7 +16,7 @@ combinations:
   - heaven / clu_smash=1
 flags:
   clu_smash:
-    default: 1
+    default: 0
   goblin:
     default: 0
   graveseen:
@@ -24,9 +24,9 @@ flags:
     max: 3
     min: 0
   itm_hammer:
-    default: 1
+    default: 0
   itm_nail:
-    default: 1
+    default: 0
   lnk_mailbox:
     default: 0
   mailfire:
@@ -59,11 +59,24 @@ items:
     name:
     - A nail
 links:
+  lnk_ana:
+    left:
+    - ana
+  lnk_edvard:
+    left:
+    - edvard
+    right:
+    - edvard
   lnk_graves:
     left:
     - grave
     right:
     - x_grave
+  lnk_kristi:
+    left:
+    - kristi
+    right:
+    - kristi
   lnk_mailbox:
     left:
     - mailbox
@@ -76,6 +89,16 @@ metadata:
   author: Teognis
   title: Power
 scenes:
+  ana:
+    anchor:
+      type: Back
+    output:
+    - - txt: Zapravljivo potomstvo jo bo spravilo v grob!
+  edvard:
+    anchor:
+      type: Back
+    output:
+    - - txt: No, zemlje je dosti...celo en velik bajer lahko naredimo!
   examine_nail:
     anchor:
       type: Back
@@ -182,9 +205,27 @@ scenes:
         - graveyard
         txt:
         - Graveyard
+  kristi:
+    anchor:
+      type: Back
+    output:
+    - - txt: Ni ga metka...
+  power:
+    output:
+    - - txt: Legenda o princu <Edvardu/lnk_edvard> Brez Zemlje, princesi <Kristini/lnk_kristi>
+          Zagorjanski in grofici <Ani/lnk_ana> Brez Denarja!
+    title: "Kolovra\u0161ka bajka"
+    type: location
+    wheel:
+      0:
+        let:
+        - marnova
+        txt:
+        - Nazaj na Marnovo 15
   start:
     output:
-    - - txt: Welcome to <Power!/lnk_power> A world of adventure awaits you!
+    - - txt: "Welcome to <Power!/lnk_power> A world of adventure awaits you! \u017D\
+          elite?"
     type: location
     wheel:
       0:

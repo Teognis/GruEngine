@@ -1,11 +1,47 @@
 ---
 gru_type: scenes
 
+power:
+    type: location
+    output:
+        -
+            - txt: "Legenda o princu <Edvardu/lnk_edvard> Brez Zemlje, princesi <Kristini/lnk_kristi> Zagorjanski in grofici <Ani/lnk_ana> Brez Denarja!"
+
+    title: Kolovraška bajka
+    wheel:
+        0:
+            txt:
+            - Nazaj na Marnovo 15
+            let:
+            - marnova
+
+edvard:
+    output:
+        -
+            - txt: "No, zemlje je dosti...celo en velik bajer lahko naredimo!"
+
+    anchor:
+        type: Back
+
+kristi:
+    output:
+        -
+            - txt: "Ni ga metka..."
+    anchor:
+        type: Back
+ana:
+    output:
+        -
+            - txt: "Zapravljivo potomstvo jo bo spravilo v grob!"
+    anchor:
+        type: Back
+
+
 start:
     type: location
     output:
         - 
-            - txt: "Welcome to <Power!/lnk_power> A world of adventure awaits you!"
+            - txt: "Welcome to <Power!/lnk_power> A world of adventure awaits you! Želite?"
     wheel:
         0:
             txt:

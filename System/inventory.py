@@ -1,15 +1,17 @@
 class Inventory():
 
-        def __init__(self, stream, flags, screen, size, folder):
-            self.folder = folder
+        def __init__(self, stream, flags, config):
+
+            self.folder = config.RESOURCES
+            self.screen = config.SCREEN
+            self.size = config.SCREEN_SIZE
+            
             self.itm_data = stream.items
             self.clu_data = stream.clues
             self.flags = flags            
-            self.screen = screen
-            self.size = size
-
-            self.x = size[0]
-            self.y = size[1]
+      
+            self.x = self.size[0]
+            self.y = self.size[1]
             self.padding = 30
             self.spacing = 10
             self.txt_color = (201, 192, 187)

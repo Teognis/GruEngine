@@ -1,18 +1,18 @@
 class Wheel():
  
-    def __init__(self, screen, size, folder):
+    def __init__(self, config):
         #creates an instance of a Wheel (that takes into account the screen coordinates)
        
-        self.folder = folder
+        self.folder = config.RESOURCES
+        self.screen = config.SCREEN
+        self.size = config.SCREEN_SIZE
         self.links = []
-        self.screen = screen
-        self.size = size
         self.inrects = []
         self.outrects = []
         self.padding = 60 
         self.anchor = None     
-        self.x = size[0]
-        self.y = size[1]
+        self.x = self.size[0]
+        self.y = self.size[1]
         self.find_positions()
         self.prepare_triangles()
         self.focus = "Inner"

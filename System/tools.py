@@ -25,7 +25,7 @@ def glyph_links(text, flags):              #creates Glyph markup out of Grue mar
         oldstring = "<" + original + ">"   
         newstring = "{link "+index+"; {default; "+word+"}}"   
         text = text.replace(oldstring, newstring)     
-        counter =+ 1
+        counter += 1
     return text, tuples
 
 def hide_link(link, flags):
