@@ -1,0 +1,1 @@
+- added .tokens attribute to Glyph in glyph.wrap(); this gives Page.py the option of interfacing with native glyph surface rect objects for more blitting options

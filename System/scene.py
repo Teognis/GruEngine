@@ -1,7 +1,8 @@
 class Scene():  
 
     def __init__(self, name, data, flags):
-        import copy      
+        import copy     
+        self.raw = "" 
         self.name = name
         self.data = copy.deepcopy(data)        
         self.title = "" 
@@ -98,7 +99,8 @@ class Scene():
                     seg_output = variation.output
                     seg_effects = variation.effects            
 
-            output = output + padding + seg_output + padding            
+            output = output + padding + seg_output + padding
+            # output = output + padding + seg_output          
             effects = effects + seg_effects
                 
         self.effects = effects
@@ -106,10 +108,47 @@ class Scene():
         for effect in self.effects:
             self.flags.set(*effect)
 
+        self.raw = self.find_raw(output)
+
         output, hyperlinks = glyph_links(output, self.flags)
         self.output = output
         self.hyperlinks = hyperlinks
 
+    def find_raw(self, text):
+        linklist = []
+        tuples = []
+    
+        splittext = text.split(">")                 
+        for i in splittext:
+            indeks = i.find("<")
+            if indeks is not -1:
+                length = len(i)
+                word = i[indeks+1:length]                    
+                if word not in linklist:                     
+                    linklist.append(word)
+        for i in linklist:
+            tpl = i.split("/")
+            tuples.append(tpl)    
+            counter = 0
+        for i in tuples:
+            word = i[0]
+            link = i[1]
+            index = str(counter) 
+            i.append(index)              
+            original = word + "/" + link
+            oldstring = "<" + original + ">"   
+            newstring = word  
+            text = text.replace(oldstring, newstring)     
+            counter += 1
+        # text = text.replace("/n/n","/n")
+        # text = text.replace("  "," ")
+        # text = text.strip()
+        text = text.replace("/n"," /n ")
+        # text = text.replace("/n",'\n')
+        
+
+        return text
+    
     def auto_flag(self):
         name = self.name
         effect = [name, "=", "1"]
@@ -174,6 +213,8 @@ class Link():
     def __init__(self, name, data, flags):
         import copy        
         self.name = name
+        self.left = []
+        self.right = []
         self.data = copy.deepcopy(data[name])     
         self.flags = flags
        
@@ -222,10 +263,11 @@ class Link():
         self.right = right
 
 class Title():
-    def __init__(self, screen, size, folder):
-        self.folder = folder               
-        self.screen = screen
-        self.size = size
+    def __init__(self, config):
+
+        self.folder = config.RESOURCES
+        self.screen = config.SCREEN
+        self.size = config.SCREEN_SIZE
         self.find_position()
         self.text = None
         self.text_size = 16

@@ -1,11 +1,13 @@
 class Menu():
-    def __init__(self, screen, size, resource_folder, save_folder, state):
-        self.state = state
-        self.resource_folder = resource_folder
-        self.save_folder = save_folder
-        self.screen = screen
-        self.x = size[0]
-        self.y = size[1]
+    def __init__(self, main, config, game=None):
+        # self.state = state
+        self.main = main
+        self.config = config
+        self.resource_folder = config.RESOURCES
+        self.save_folder = config.SAVE
+        self.screen = config.SCREEN
+        self.x = config.SCREEN_SIZE[0]
+        self.y = config.SCREEN_SIZE[1]
         self.padding = 30
         self.spacing = 25
         self.txt_color = (48, 48, 48)
@@ -20,6 +22,7 @@ class Menu():
         self.save = []
         self.restore = []
         self.input_rect = []
+        self.game = game
 
     def find_length(self, text):
         import pygame
@@ -161,7 +164,8 @@ class Menu():
             elif input_id == "mnu_quit":
                 exit()
         else:
-            self.state.input(input_id, input_type, direction, button)
+            if self.game is not None:
+                self.game.state.input(input_id, input_type, direction, button)
 
     def enter(self, key):
         import pygame
@@ -223,7 +227,7 @@ class Menu():
         from os.path import dirname
         newname = filename + ".p"
         file_path = os.path.join(self.save_folder, newname)   
-        data = self.state.snapshot
+        data = self.game.state.snapshot
         pickle.dump(data, open(file_path, "wb"))
 
     def restore_game(self, filename):
@@ -235,14 +239,14 @@ class Menu():
         file_path = os.path.join(self.save_folder, newname)
         if os.path.isfile(file_path) is True:
             data = pickle.load(open(file_path, "rb"))   
-            self.state.restore(data) 
+            self.game.state.restore(data) 
         else:
             print "File " + newname + " does not exist!"
 
         
     def new_game(self):
-        self.state.reset()
-        self.state.update("start")
+        self.game.state.reset()
+        self.game.state.update("start")
         
 
 

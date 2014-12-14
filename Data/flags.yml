@@ -25,13 +25,13 @@ test:
     default: 0
 
 itm_hammer:
-    default: 1
+    default: 0
 
 clu_smash:
-    default: 1
+    default: 0
 
 itm_nail:
-    default: 1
+    default: 0
 
 lnk_mailbox:
     default: 0

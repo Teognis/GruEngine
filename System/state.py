@@ -25,7 +25,8 @@ class State():
         self.previous = None  
         self.scene = None 
         self.snapshot = None 
-        self.links = []                  
+        self.links = [] 
+        self.raw = ""                 
 
     def generate(self, name):
         from scene import Scene           
@@ -72,16 +73,18 @@ class State():
         if cutscene is not None:
             self.follow(cutscene)
         else:              
-            self.scene = scene  
+            self.scene = scene 
+
             if self.previous is not None:        
                  self.set_parents()  
             self.output = self.scene.output
+            self.raw = self.scene.raw
             title = self.scene.title
             self.inventory.update()
             self.title.update(self.scene.title)     
             self.wheel.update(self.scene)
             self.links = self.scene.hyperlinks
-            self.page.update(self.output, self.links)
+            self.page.update(self.output, self.links, self.raw)
  
 
     def input(self, input_id, input_type, direction, button):                 
@@ -174,10 +177,13 @@ class State():
         parent = self.previous        
         child = self.scene.name
         tpl = (child, parent)  
-        if self.scene.anchor.type != "Back":
+        if self.scene.anchor == None:
             self.parents = []
-        if self.scene.anchor.type == "Back":     
-            self.parents.append(tpl)      
+        else:
+            if self.scene.anchor.type == "Continue":
+                self.parents = []
+            if self.scene.anchor.type == "Back":     
+                self.parents.append(tpl)      
 
     def find_parent(self, child):
         for tpl in self.parents:
@@ -186,11 +192,5 @@ class State():
                 self.parents.remove(tpl)
                 return parent
     
-    def draw(self):
-        self.inventory.draw()
-        self.wheel.draw()
-        self.title.draw()
-        self.page.draw()
-        
         
 
