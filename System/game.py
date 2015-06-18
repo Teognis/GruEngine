@@ -25,11 +25,13 @@ import config
 
 class Game():   
     
-    def __init__(self, gru_file):
+    def __init__(self, gru_file=None):
         
-        self.compiler = Compiler(gru_file)
-        self.stream = self.compiler.stream
-        print self.stream.metadata     
+        self.compiler = Compiler()
+        if gru_file:
+            self.stream = self.compiler.decompile(gru_file) 
+        else:            
+            self.stream = self.compiler.compile(None)   
         self.metadata = self.stream.metadata   
         self.flags = Flags(self.stream)
         self.wheel = Wheel(config)

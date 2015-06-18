@@ -1,4 +1,13 @@
 clues:
+  clu_amash:
+    left:
+    - route_think
+    name:
+    - Finding an escape route.
+    reveal:
+    - lnk_test / goblin=2
+    right:
+    - route_exam
   clu_smash:
     left:
     - route_think
@@ -214,7 +223,7 @@ scenes:
     output:
     - - txt: Legenda o princu <Edvardu/lnk_edvard> Brez Zemlje, princesi <Kristini/lnk_kristi>
           Zagorjanski in grofici <Ani/lnk_ana> Brez Denarja!
-    title: "Kolovra\u0161ka bajka"
+    title: Kolovraska bajka
     type: location
     wheel:
       0:
@@ -224,8 +233,7 @@ scenes:
         - Nazaj na Marnovo 15
   start:
     output:
-    - - txt: "Welcome to <Power!/lnk_power> A world of adventure awaits you! \u017D\
-          elite?"
+    - - txt: Welcome to <Power!/lnk_power> A world of adventure awaits you! zelite?
     type: location
     wheel:
       0:

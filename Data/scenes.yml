@@ -7,7 +7,7 @@ power:
         -
             - txt: "Legenda o princu <Edvardu/lnk_edvard> Brez Zemlje, princesi <Kristini/lnk_kristi> Zagorjanski in grofici <Ani/lnk_ana> Brez Denarja!"
 
-    title: Kolovraška bajka
+    title: Kolovraska bajka
     wheel:
         0:
             txt:
@@ -41,7 +41,7 @@ start:
     type: location
     output:
         - 
-            - txt: "Welcome to <Power!/lnk_power> A world of adventure awaits you! Želite?"
+            - txt: "Welcome to <Power!/lnk_power> A world of adventure awaits you! zelite?"
     wheel:
         0:
             txt:

@@ -1,13 +1,23 @@
 ---
 gru_type: clues
 
+clu_amash:
+        name: 
+        - Finding an escape route.
+        left:
+        - route_think
+        right:
+        - route_exam 
+        reveal:
+        - lnk_test / goblin=2
+
 clu_smash:
         name: 
         - Finding an escape route.
         left:
         - route_think
         right:
-        - route_exam
+        - route_exam 
         reveal:
         - lnk_mailbox / goblin=2
 

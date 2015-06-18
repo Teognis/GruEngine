@@ -33,7 +33,6 @@ import config
 class Main():
 
     def __init__(self, gru_file=None): 
-        import pygame
         self.menu = Menu(self, config, game = None)        
         self.library = Library(self, config)
         self.collider = Collider(self.menu, self.library, game=None)

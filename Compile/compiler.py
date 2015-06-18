@@ -1,72 +1,77 @@
 class Compiler():
 
-    def __init__(self, filename=None, portable=False):
-        from compiler import Stream           
-        self.stream = Stream()         
-        self.filename = filename
-        if portable == False:
-            self.find_folders()
-        else:
-            self.find_folders(default=False)        
-        if filename == None:
-            self.compile()  
-            self.dump(self.stream)             
-        else:    
-            self.decompile() 
-        
-           
+    def __init__(self):
+        from compiler import Stream             
+        self.default_folders()   
 
-    def find_folders(self, default=True):
+
+    def default_folders(self):
         import os
         from os import chdir
         from os.path import dirname
-        if default == True:
-            OUTPUT = os.path.join(dirname(__file__), "output")
-            # INPUT = os.path.join(dirname(__file__), "input")
-            INPUT = os.path.join(dirname(dirname(__file__)), "data")
-        else:
-            OUTPUT = os.getcwd()            
-            INPUT = os.getcwd()
-        self.output_folder = OUTPUT
-        self.input_folder = INPUT
+        OUTPUT = os.path.join(dirname(__file__), "output")
+        INPUT = os.path.join(dirname(__file__), "input")
+        self.output = OUTPUT
+        self.input = INPUT
 
-    def compile(self):
+
+    def compile(self, folder=None):
         import os        
-        input_folder = self.input_folder
-        for datafile in os.listdir(input_folder):
+        from compiler import Stream           
+        stream = Stream() 
+        if folder:
+            input_folder = folder
+        else:
+            input_folder = self.input_folder  
+                
+        fileSet = set() 
+        for dir_, _, files in os.walk(input_folder):
+            for fileName in files:
+                relDir = os.path.relpath(dir_, input_folder)
+                relFile = os.path.join(relDir, fileName)
+                fileSet.add(relFile)
+        
+        for datafile in fileSet:
             if datafile.endswith(".yml"):
-                stream_data = open(os.path.join(input_folder, datafile), "r")             
-                self.stream.input(stream_data)
+                filename = os.path.join(input_folder, datafile)
+                stream_data = open(filename, "r")          
+                stream.input(stream_data)
 
-    def dump(self, stream):
+        return stream
+
+
+    def dump(self, stream, output_folder):
         import yaml
         import os
         import io
         file_name = stream.metadata["title"]
         file_name = file_name + ".gru"
-        self.filename = file_name
-        gru_file = open(os.path.join(self.output_folder, file_name), "wb") 
+        full_path = os.path.join(output_folder, file_name)
+        gru_file = open(full_path, "wb") 
         gru_file.seek(0)
         gru_file.truncate()        
         data = stream.__dict__
         # yaml.dump(data, gru_file, default_flow_style=False, allow_unicode=True, encoding=('utf-8'))
-        yaml.dump(data, gru_file, default_flow_style=False, encoding=('utf-8'))
-        self.dump = gru_file            
+        # yaml.dump(data, gru_file, default_flow_style=False, encoding=('utf-8'))
+        yaml.dump(data, gru_file, default_flow_style=False, encoding=('utf-8'))          
         gru_file.close()
+        return full_path
         
 
-    def decompile(self):
+    def decompile(self, file_path):
         import yaml
-        name = self.filename        
-        stream = self.stream
-        stream_data = open(name, "r")
+        from compiler import Stream 
+        name = file_path       
+        stream = Stream()
+        stream_data = open(file_path, "r")
         data = yaml.load(stream_data)        
         for item in data.keys():
             key = str(item)
-            data_type = data[key] 
-            stream.input(data_type, key)     
-        self.output = stream.output() 
-        self.stream = stream
+            data_type = data[key]
+            # key = key.encode('utf-8')
+            stream.input(data_type, key)  
+        return stream   
+
                                         
                 
 class Stream():
